@@ -31,6 +31,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
     Route::get('/products/stock', [ProductController::class, 'stock'])->name('product.stock');
     Route::get('/products/stock-opname', [ProductController::class, 'stockOpname'])->name('product.stock_opname');
+    Route::post('/products/stock-opname', [ProductController::class, 'storeStockOpname'])->name('product.stock_opname.store');
     Route::get('/products/barcode', [ProductController::class, 'barcode'])->name('product.barcode');
 
     // Placeholders for other menus
