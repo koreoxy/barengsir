@@ -39,8 +39,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::post('/transaction/checkout', [App\Http\Controllers\TransactionController::class, 'store'])->name('transaction.store');
     Route::get('/customer', function() { return 'Pelanggan'; })->name('customer.index');
     Route::get('/report', [App\Http\Controllers\ReportController::class, 'index'])->name('report.index');
-    Route::get('/setting', function() { return 'Pengaturan'; })->name('setting.index');
-
+    Route::get('/setting', [App\Http\Controllers\SettingController::class, 'index'])->name('setting.index');
+    Route::put('/setting/store', [App\Http\Controllers\SettingController::class, 'updateStore'])->name('setting.store');
+    Route::put('/setting/account', [App\Http\Controllers\SettingController::class, 'updateAccount'])->name('setting.account');
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
