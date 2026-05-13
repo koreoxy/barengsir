@@ -58,14 +58,36 @@
                             <!-- Harga & Stok -->
                             <div class="space-y-4">
                                 <div>
-                                    <x-input-label for="purchase_price" :value="__('Harga Modal (Beli)')" />
-                                    <x-text-input id="purchase_price" name="purchase_price" type="number" step="0.01" class="mt-1 block w-full focus:border-blue-500 focus:ring-blue-500" :value="old('purchase_price', 0)" required />
+                                    <x-input-label for="purchase_price_display" :value="__('Harga Modal (Beli)')" />
+                                    <div class="mt-1 relative rounded-md shadow-sm">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <span class="text-gray-500 sm:text-sm">Rp</span>
+                                        </div>
+                                        <input id="purchase_price_display" type="text" inputmode="numeric"
+                                            class="block w-full rounded-md border-gray-300 pl-10 focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                            placeholder="0"
+                                            value="{{ old('purchase_price') ? number_format(old('purchase_price'), 0, ',', '.') : '' }}"
+                                            data-price-input="purchase_price" />
+                                        <input type="hidden" id="purchase_price" name="purchase_price"
+                                            value="{{ old('purchase_price', 0) }}" />
+                                    </div>
                                     <x-input-error class="mt-2" :messages="$errors->get('purchase_price')" />
                                 </div>
 
                                 <div>
-                                    <x-input-label for="selling_price" :value="__('Harga Jual')" />
-                                    <x-text-input id="selling_price" name="selling_price" type="number" step="0.01" class="mt-1 block w-full focus:border-blue-500 focus:ring-blue-500" :value="old('selling_price', 0)" required />
+                                    <x-input-label for="selling_price_display" :value="__('Harga Jual')" />
+                                    <div class="mt-1 relative rounded-md shadow-sm">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <span class="text-gray-500 sm:text-sm">Rp</span>
+                                        </div>
+                                        <input id="selling_price_display" type="text" inputmode="numeric"
+                                            class="block w-full rounded-md border-gray-300 pl-10 focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                            placeholder="0"
+                                            value="{{ old('selling_price') ? number_format(old('selling_price'), 0, ',', '.') : '' }}"
+                                            data-price-input="selling_price" />
+                                        <input type="hidden" id="selling_price" name="selling_price"
+                                            value="{{ old('selling_price', 0) }}" />
+                                    </div>
                                     <x-input-error class="mt-2" :messages="$errors->get('selling_price')" />
                                 </div>
 
@@ -102,6 +124,39 @@
                     </form>
 
                 </div>
+
+                <script>
+                    document.querySelectorAll('[data-price-input]').forEach(function(displayInput) {
+                        const hiddenId = displayInput.getAttribute('data-price-input');
+                        const hiddenInput = document.getElementById(hiddenId);
+
+                        function formatNumber(val) {
+                            const raw = val.replace(/\D/g, '');
+                            return raw ? parseInt(raw).toLocaleString('id-ID') : '';
+                        }
+
+                        displayInput.addEventListener('input', function() {
+                            const raw = this.value.replace(/\D/g, '');
+                            hiddenInput.value = raw || 0;
+                            const pos = this.selectionStart;
+                            const prevLen = this.value.length;
+                            this.value = formatNumber(this.value);
+                            const newLen = this.value.length;
+                            this.setSelectionRange(pos + (newLen - prevLen), pos + (newLen - prevLen));
+                        });
+
+                        displayInput.addEventListener('keydown', function(e) {
+                            // Allow: backspace, delete, tab, escape, enter, arrows
+                            const allowed = [8, 9, 13, 27, 35, 36, 37, 38, 39, 40, 46];
+                            if (allowed.includes(e.keyCode)) return;
+                            // Block non-numeric input
+                            if ((e.shiftKey || e.ctrlKey || e.metaKey) && ![65, 67, 86, 88, 90].includes(e.keyCode)) return;
+                            if (e.keyCode < 48 || (e.keyCode > 57 && e.keyCode < 96) || e.keyCode > 105) {
+                                e.preventDefault();
+                            }
+                        });
+                    });
+                </script>
             </div>
         </div>
     </div>
