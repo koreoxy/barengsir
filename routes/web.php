@@ -34,8 +34,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::post('/products/stock-opname', [ProductController::class, 'storeStockOpname'])->name('product.stock_opname.store');
     Route::get('/products/barcode', [ProductController::class, 'barcode'])->name('product.barcode');
 
-    // Placeholders for other menus
-    Route::get('/transaction', function() { return 'Transaksi'; })->name('transaction.index');
+    // Transaksi / Kasir
+    Route::get('/transaction', [App\Http\Controllers\TransactionController::class, 'index'])->name('transaction.index');
+    Route::post('/transaction/checkout', [App\Http\Controllers\TransactionController::class, 'store'])->name('transaction.store');
     Route::get('/customer', function() { return 'Pelanggan'; })->name('customer.index');
     Route::get('/report', function() { return 'Laporan'; })->name('report.index');
     Route::get('/setting', function() { return 'Pengaturan'; })->name('setting.index');
