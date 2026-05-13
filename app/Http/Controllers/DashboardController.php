@@ -9,18 +9,32 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $today = \Carbon\Carbon::today();
+
+        $todaySales = \App\Models\Transaction::whereDate('created_at', $today)->sum('total_amount');
+        $todayTransactions = \App\Models\Transaction::whereDate('created_at', $today)->count();
+        $activeProducts = \App\Models\Product::count();
+        $lowStockCount = \App\Models\Product::where('stock', '<=', 5)->count();
+
+        $recentTransactions = \App\Models\Transaction::with('user')
+                                ->orderBy('created_at', 'desc')
+                                ->take(5)
+                                ->get();
+
+        $topProducts = \App\Models\TransactionItem::with('product')
+                            ->selectRaw('product_id, SUM(quantity) as total_sold')
+                            ->groupBy('product_id')
+                            ->orderByDesc('total_sold')
+                            ->take(5)
+                            ->get();
+
         $data = [
-            'total_sales' => 'Rp 15.430.000',
-            'total_transactions' => 142,
-            'revenue' => 'Rp 8.250.000',
-            'active_products' => 320,
-            'recent_transactions' => [
-                ['id' => 'TRX-001', 'date' => '2023-10-27', 'amount' => 'Rp 150.000', 'status' => 'Completed'],
-                ['id' => 'TRX-002', 'date' => '2023-10-27', 'amount' => 'Rp 50.000', 'status' => 'Completed'],
-                ['id' => 'TRX-003', 'date' => '2023-10-26', 'amount' => 'Rp 200.000', 'status' => 'Pending'],
-                ['id' => 'TRX-004', 'date' => '2023-10-26', 'amount' => 'Rp 75.000', 'status' => 'Completed'],
-                ['id' => 'TRX-005', 'date' => '2023-10-25', 'amount' => 'Rp 300.000', 'status' => 'Completed'],
-            ]
+            'todaySales' => $todaySales,
+            'todayTransactions' => $todayTransactions,
+            'activeProducts' => $activeProducts,
+            'lowStockCount' => $lowStockCount,
+            'recentTransactions' => $recentTransactions,
+            'topProducts' => $topProducts,
         ];
 
         return view('dashboard', $data);
