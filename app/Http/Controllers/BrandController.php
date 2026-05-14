@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class BrandController extends Controller
 {
@@ -22,7 +23,12 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:brands,name',
+            'name' => [
+                'required', 
+                'string', 
+                'max:255', 
+                Rule::unique('brands')->where(fn ($query) => $query->where('branch_id', session('active_branch_id')))
+            ],
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
@@ -40,7 +46,12 @@ class BrandController extends Controller
     public function update(Request $request, Brand $brand)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:brands,name,' . $brand->id,
+            'name' => [
+                'required', 
+                'string', 
+                'max:255', 
+                Rule::unique('brands')->ignore($brand->id)->where(fn ($query) => $query->where('branch_id', session('active_branch_id')))
+            ],
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);

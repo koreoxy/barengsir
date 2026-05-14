@@ -4,12 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Traits\HasBranch;
+
 class Product extends Model
 {
+    use HasBranch;
     protected $fillable = [
-        'category_id', 'brand_id', 'name', 'sku', 'description', 
+        'category_id', 'brand_id', 'branch_id', 'name', 'sku', 'description', 
         'purchase_price', 'selling_price', 'stock', 'image'
     ];
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 
     public function category()
     {

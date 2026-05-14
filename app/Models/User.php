@@ -54,4 +54,24 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+    /**
+     * Check if user is super admin.
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin';
+    }
+
+    public function vendorUsers()
+    {
+        return $this->hasMany(VendorUser::class);
+    }
+
+    public function vendors()
+    {
+        return $this->belongsToMany(Vendor::class, 'vendor_users')
+            ->withPivot('role', 'branch_id', 'is_active')
+            ->withTimestamps();
+    }
 }

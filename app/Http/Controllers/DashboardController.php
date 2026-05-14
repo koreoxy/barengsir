@@ -26,7 +26,10 @@ class DashboardController extends Controller
                             ->groupBy('product_id')
                             ->orderByDesc('total_sold')
                             ->take(5)
-                            ->get();
+                            ->get()
+                            ->filter(function($item) {
+                                return $item->product !== null;
+                            });
 
         $data = [
             'todaySales' => $todaySales,

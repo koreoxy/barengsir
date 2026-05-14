@@ -4,14 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Traits\HasBranch;
+
 class Transaction extends Model
 {
+    use HasBranch;
     protected $fillable = [
         'invoice_number',
         'total_amount',
         'paid_amount',
-        'user_id'
+        'user_id',
+        'branch_id'
     ];
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 
     public function items()
     {

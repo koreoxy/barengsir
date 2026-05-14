@@ -21,11 +21,31 @@
                         {{ __('Produk') }}
                     </x-nav-link>
                     @endif
+
+                    @if(in_array(session('active_role'), ['owner', 'admin']))
+                    <x-nav-link :href="route('vendor.users.index')" :active="request()->routeIs('vendor.users.*')">
+                        {{ __('Manajemen User') }}
+                    </x-nav-link>
+                    @endif
+
+                    @if(session('active_role') === 'owner')
+                    <x-nav-link :href="route('vendor.branches.index')" :active="request()->routeIs('vendor.branches.*')">
+                        {{ __('Cabang') }}
+                    </x-nav-link>
+                    @endif
                 </div>
             </div>
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                @if(session('active_branch_id'))
+                <div class="text-sm text-gray-500 mr-4">
+                    <span class="font-semibold text-indigo-600">{{ session('active_branch_name') }}</span>
+                    <span class="mx-1 text-gray-300">|</span>
+                    <a href="{{ route('branch.select') }}" class="hover:text-indigo-600 hover:underline">Ganti Cabang</a>
+                </div>
+                @endif
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -82,6 +102,18 @@
                 {{ __('Produk') }}
             </x-responsive-nav-link>
             @endif
+
+            @if(in_array(session('active_role'), ['owner', 'admin']))
+            <x-responsive-nav-link :href="route('vendor.users.index')" :active="request()->routeIs('vendor.users.*')">
+                {{ __('Manajemen User') }}
+            </x-responsive-nav-link>
+            @endif
+
+            @if(session('active_role') === 'owner')
+            <x-responsive-nav-link :href="route('vendor.branches.index')" :active="request()->routeIs('vendor.branches.*')">
+                {{ __('Cabang') }}
+            </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
@@ -89,9 +121,19 @@
             <div class="px-4">
                 <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
                 <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                @if(session('active_branch_id'))
+                <div class="mt-1 font-medium text-sm text-indigo-600">
+                    {{ session('active_branch_name') }}
+                </div>
+                @endif
             </div>
 
             <div class="mt-3 space-y-1">
+                @if(session('active_branch_id'))
+                <x-responsive-nav-link :href="route('branch.select')">
+                    {{ __('Ganti Cabang') }}
+                </x-responsive-nav-link>
+                @endif
                 <x-responsive-nav-link :href="route('setting.index')">
                     {{ __('Pengaturan') }}
                 </x-responsive-nav-link>

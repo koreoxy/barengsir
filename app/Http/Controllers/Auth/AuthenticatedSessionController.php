@@ -29,12 +29,22 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Role-based redirect
-        if ($request->user()->role === 'admin') {
-            return redirect()->intended(route('dashboard', absolute: false));
+        $user = $request->user();
+
+        // Super Admin redirect - and protection
+        if ($user->isSuperAdmin()) {
+            // If they login through vendor form, reject them
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => 'Gunakan halaman Super Admin untuk login.',
+            ]);
         }
 
-        return redirect()->intended(route('home', absolute: false));
+        // Everyone else goes to branch selection
+        return redirect()->intended(route('branch.select', absolute: false));
     }
 
     /**

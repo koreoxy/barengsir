@@ -4,9 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Traits\HasBranch;
+
 class Brand extends Model
 {
-    protected $fillable = ['name', 'slug'];
+    use HasBranch;
+    protected $fillable = ['name', 'slug', 'branch_id'];
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
 
     public function products()
     {

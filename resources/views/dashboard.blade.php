@@ -122,16 +122,16 @@
                             @forelse($topProducts as $item)
                             <div class="flex items-center justify-between pb-4 border-b border-gray-100 last:border-0 last:pb-0">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
-                                        @if($item->product->image)
+                                    <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+                                        @if($item->product && $item->product->image)
                                             <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}" class="w-12 h-12 rounded-lg object-cover">
                                         @else
                                             <svg class="w-6 h-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                         @endif
                                     </div>
                                     <div>
-                                        <p class="font-bold text-gray-900 line-clamp-1">{{ $item->product->name }}</p>
-                                        <p class="text-xs text-gray-500">{{ $item->product->sku ?? 'No SKU' }}</p>
+                                        <p class="font-bold text-gray-900 line-clamp-1">{{ $item->product?->name ?? 'Produk Tidak Ditemukan' }}</p>
+                                        <p class="text-xs text-gray-500">{{ $item->product?->sku ?? 'No SKU' }}</p>
                                     </div>
                                 </div>
                                 <div class="text-right pl-4">

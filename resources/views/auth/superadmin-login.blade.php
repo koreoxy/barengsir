@@ -1,21 +1,11 @@
-<x-guest-layout>
-    <x-slot name="title">Login</x-slot>
+<x-guest-layout panelClass="bg-gradient-to-br from-slate-800 via-slate-700 to-indigo-900" heroTitle="Super Admin Panel">
+    <x-slot name="title">Super Admin Login</x-slot>
 
     <!-- Page Title -->
     <div class="mb-8">
-        <h2 class="text-3xl font-bold text-slate-800">Selamat Datang!</h2>
-        <p class="text-slate-500 mt-2">Login untuk mengelola bisnis Anda.</p>
+        <h2 class="text-3xl font-bold text-slate-800">Super Admin</h2>
+        <p class="text-slate-500 mt-2">Akses terbatas untuk operator platform.</p>
     </div>
-
-    <!-- Success Message (from register) -->
-    @if (session('success'))
-        <div class="mb-6 flex items-start gap-3 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>{{ session('success') }}</span>
-        </div>
-    @endif
 
     <!-- Session Status -->
     @if (session('status'))
@@ -24,7 +14,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('login') }}" class="space-y-5">
+    <form method="POST" action="{{ route('superadmin.login') }}" class="space-y-5">
         @csrf
 
         <!-- Email -->
@@ -46,8 +36,8 @@
                     required
                     autofocus
                     autocomplete="username"
-                    placeholder="email@bisnis.com"
-                    class="block w-full pl-10 pr-4 py-3 border {{ $errors->has('email') ? 'border-red-400 bg-red-50' : 'border-slate-300 bg-white' }} rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    placeholder="superadmin@pos.com"
+                    class="block w-full pl-10 pr-4 py-3 border {{ $errors->has('email') ? 'border-red-400 bg-red-50' : 'border-slate-300 bg-white' }} rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                 />
             </div>
             @error('email')
@@ -76,12 +66,12 @@
                     required
                     autocomplete="current-password"
                     placeholder="••••••••"
-                    class="block w-full pl-10 pr-10 py-3 border {{ $errors->has('password') ? 'border-red-400 bg-red-50' : 'border-slate-300 bg-white' }} rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                    class="block w-full pl-10 pr-10 py-3 border {{ $errors->has('password') ? 'border-red-400 bg-red-50' : 'border-slate-300 bg-white' }} rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                 />
                 <button
                     type="button"
                     @click="show = !show"
-                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-blue-600 transition-colors"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-indigo-600 transition-colors"
                 >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-show="!show">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -100,49 +90,22 @@
             @enderror
         </div>
 
-        <!-- Remember & Forgot -->
-        <div class="flex items-center justify-between">
-            <label for="remember_me" class="inline-flex items-center cursor-pointer">
-                <input
-                    id="remember_me"
-                    type="checkbox"
-                    name="remember"
-                    class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 transition"
-                />
-                <span class="ml-2 text-sm text-slate-600">Ingat Saya</span>
-            </label>
-
-            @if (Route::has('password.request'))
-                <a href="{{ route('password.request') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
-                    Lupa password?
-                </a>
-            @endif
-        </div>
-
         <!-- Submit -->
         <button
             type="submit"
-            class="w-full flex items-center justify-center px-4 py-3 bg-blue-600 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150 mt-2"
+            class="w-full flex items-center justify-center px-4 py-3 bg-slate-800 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-150 mt-2"
         >
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
             </svg>
-            Masuk ke Akun
+            Masuk sebagai Operator
         </button>
 
-        <!-- Register Link -->
+        <!-- Back to Vendor Login -->
         <p class="text-center text-sm text-slate-500 mt-4">
-            Belum punya akun?
-            <a href="{{ route('register') }}" class="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-                Daftar Bisnis Baru
-            </a>
-        </p>
-
-        <!-- Hint Super Admin -->
-        <p class="text-center text-xs text-slate-400 mt-6 border-t border-slate-100 pt-4">
-            Operator platform? 
-            <a href="{{ route('superadmin.login') }}" class="text-slate-500 hover:text-slate-700 underline">
-                Login di sini
+            Bukan operator?
+            <a href="{{ route('login') }}" class="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
+                Kembali ke Login Vendor
             </a>
         </p>
     </form>

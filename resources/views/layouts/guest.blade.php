@@ -18,7 +18,7 @@
         <div class="min-h-screen flex">
 
             <!-- Left Panel - Branding -->
-            <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 flex-col justify-between p-12 relative overflow-hidden">
+            <div class="hidden lg:flex lg:w-1/2 {{ $panelClass }} flex-col justify-between p-12 relative overflow-hidden">
                 <!-- Decorative circles -->
                 <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                 <div class="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
@@ -38,7 +38,7 @@
                 <!-- Hero Text -->
                 <div class="relative z-10">
                     <h1 class="text-4xl font-bold text-white leading-tight mb-4">
-                        Kelola Bisnis<br>Lebih Mudah &<br>Lebih Cepat
+                        {!! str_replace('&', '<br>', $heroTitle) !!}
                     </h1>
                     <p class="text-blue-100 text-lg leading-relaxed mb-8">
                         Sistem Point of Sale modern untuk usaha Anda. Catat transaksi, kelola stok, dan lihat laporan secara real-time.

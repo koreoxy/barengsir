@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Models\StockMovement;
+use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
@@ -31,7 +32,12 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
-            'sku' => 'nullable|string|unique:products,sku|max:255',
+            'sku' => [
+                'nullable', 
+                'string', 
+                'max:255', 
+                Rule::unique('products')->where(fn ($query) => $query->where('branch_id', session('active_branch_id')))
+            ],
             'description' => 'nullable|string',
             'purchase_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
@@ -62,7 +68,12 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
-            'sku' => 'nullable|string|unique:products,sku,' . $product->id . '|max:255',
+            'sku' => [
+                'nullable', 
+                'string', 
+                'max:255', 
+                Rule::unique('products')->ignore($product->id)->where(fn ($query) => $query->where('branch_id', session('active_branch_id')))
+            ],
             'description' => 'nullable|string',
             'purchase_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
