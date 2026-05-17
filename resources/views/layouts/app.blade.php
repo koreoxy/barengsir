@@ -1,103 +1,146 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ config('app.name', 'POS Dashboard') }}</title>
 
-        <title>{{ config('app.name', 'POS Dashboard') }}</title>
+    {{-- Fonts: Geist (modern developer font, matches Neon's aesthetic) --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <!-- AlpineJS -->
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    </head>
-    <body class="font-sans antialiased bg-slate-50 text-slate-900">
-        <div class="min-h-screen flex bg-slate-50">
-            <!-- Sidebar -->
-            <x-sidebar />
+    <style>
+        * { font-family: 'Geist', ui-sans-serif, system-ui, sans-serif !important; }
 
-            <!-- Main Wrapper -->
-            <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-                <!-- Topbar -->
-                <header class="bg-blue-600 text-white shadow-md z-10 sticky top-0">
-                    <div class="w-full px-4 sm:px-6 lg:px-8">
-                        <div class="flex justify-between h-16 items-center">
-                            <div class="flex items-center">
-                                <!-- Mobile menu button -->
-                                <button type="button" id="sidebarToggle" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-white hover:text-blue-100 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white mr-2">
-                                    <span class="sr-only">Buka menu sidebar</span>
-                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                                    </svg>
-                                </button>
-                                <div class="shrink-0 flex items-center font-bold text-xl">
-                                    POS BarengSir
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-4">
-                                <span class="text-sm font-medium">{{ auth()->user()->name ?? 'Kasir' }}</span>
-                                <div class="h-8 w-8 rounded-full bg-blue-400 border-2 border-white flex items-center justify-center text-xs font-bold uppercase">
-                                    {{ strtoupper(substr(auth()->user()->name ?? 'K', 0, 1)) }}
-                                </div>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="text-sm text-blue-100 hover:text-white transition-colors" title="Keluar">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                        </svg>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+        /* Slim scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Dashboard layout — sidebar stays in column, only main content scrolls */
+        @media (min-width: 768px) {
+            #sidebarComponent {
+                position: sticky !important;
+                top: 0 !important;
+                left: auto !important;
+                transform: none !important;
+                z-index: auto !important;
+                inset: auto !important;
+            }
+        }
+
+        /* Ensure proper flex height chain for scrollable content */
+        .content-column {
+            flex: 1 1 0%;
+            min-width: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .content-main {
+            flex: 1 1 0%;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        /* Sidebar full-height with scrollable nav */
+        #sidebarComponent {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #sidebarComponent nav {
+            flex: 1 1 0%;
+            min-height: 0;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased bg-slate-50 text-slate-900 h-screen overflow-hidden">
+
+    <div class="flex h-screen overflow-hidden">
+
+        {{-- ── Column 1: Sidebar ──────────────────────── --}}
+        <x-sidebar />
+
+        {{-- ── Column 2: Content ──────────────────────── --}}
+        <div class="content-column">
+
+            {{-- Mobile Topbar (only visible below md breakpoint) --}}
+            <header class="md:hidden sticky top-0 z-10 shrink-0
+                           h-14 px-4 flex items-center justify-between
+                           bg-[#0f172a] border-b border-slate-700/40">
+                <div class="flex items-center gap-3">
+                    <button id="sidebarToggle"
+                            class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10
+                                   transition-colors focus:outline-none">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                    <span class="font-semibold text-white text-sm tracking-tight">
+                        {{ config('app.name', 'POS BarengSir') }}
+                    </span>
+                </div>
+                <div class="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-500/30
+                            flex items-center justify-center text-blue-400 text-xs font-semibold uppercase">
+                    {{ strtoupper(substr(auth()->user()->name ?? 'K', 0, 1)) }}
+                </div>
+            </header>
+
+            {{-- Page Content --}}
+            <main class="content-main">
+                @isset($header)
+                    <div class="bg-white border-b border-slate-100 px-6 py-4">
+                        {{ $header }}
                     </div>
-                </header>
+                @endisset
 
-                <!-- Page Content -->
-                <main class="flex-1 overflow-y-auto">
-                    @isset($header)
-                        <header class="bg-white shadow">
-                            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                                {{ $header }}
-                            </div>
-                        </header>
-                    @endisset
+                @hasSection('content')
+                    @yield('content')
+                @else
+                    {{ $slot ?? '' }}
+                @endif
+            </main>
 
-                    @hasSection('content')
-                        @yield('content')
-                    @else
-                        {{ $slot ?? '' }}
-                    @endif
-                </main>
-            </div>
         </div>
+    </div>
 
-        <!-- Mobile Sidebar Overlay script -->
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const sidebarToggle = document.getElementById('sidebarToggle');
-                const sidebar = document.getElementById('sidebarComponent');
-                const overlay = document.getElementById('sidebarOverlay');
+    {{-- Mobile Sidebar JS Controller --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.getElementById('sidebarToggle');
+            const sidebar   = document.getElementById('sidebarComponent');
+            const overlay   = document.getElementById('sidebarOverlay');
+            const closeBtn  = document.getElementById('closeSidebarMobile');
 
-                function toggleSidebar() {
-                    sidebar.classList.toggle('-translate-x-full');
-                    if (overlay) {
-                        overlay.classList.toggle('hidden');
-                    }
-                }
+            function openSidebar() {
+                sidebar?.classList.remove('-translate-x-full');
+                overlay?.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // lock body scroll when drawer is open
+            }
 
-                if (sidebarToggle && sidebar) {
-                    sidebarToggle.addEventListener('click', toggleSidebar);
-                }
+            function closeSidebar() {
+                sidebar?.classList.add('-translate-x-full');
+                overlay?.classList.add('hidden');
+                document.body.style.overflow = ''; // restore body scroll
+            }
 
-                if (overlay) {
-                    overlay.addEventListener('click', toggleSidebar);
-                }
-            });
-        </script>
-    </body>
+            toggleBtn?.addEventListener('click', () =>
+                sidebar?.classList.contains('-translate-x-full') ? openSidebar() : closeSidebar()
+            );
+            overlay?.addEventListener('click', closeSidebar);
+            closeBtn?.addEventListener('click', closeSidebar);
+        });
+    </script>
+</body>
 </html>
