@@ -21,10 +21,23 @@ class SetActiveBranch
         }
 
         // If user is authenticated but hasn't selected a branch
-        if (auth()->check() && !session()->has('active_branch_id')) {
-            // Except for the selection page itself
-            if (!$request->routeIs('branch.select') && !$request->routeIs('branch.set')) {
-                return redirect()->route('branch.select');
+        if (auth()->check() && !auth()->user()->isSuperAdmin()) {
+            if (!session()->has('active_branch_id')) {
+                // Except for the selection page itself
+                if (!$request->routeIs('branch.select') && !$request->routeIs('branch.set')) {
+                    return redirect()->route('branch.select');
+                }
+            } else {
+                // If branch is selected, check if vendor is still active
+                $vendorId = session('active_vendor_id');
+                $vendorActive = \App\Models\Vendor::where('id', $vendorId)->where('is_active', true)->exists();
+                
+                if (!$vendorActive) {
+                    auth()->logout();
+                    session()->invalidate();
+                    session()->regenerateToken();
+                    return redirect()->route('login')->with('error', 'Akun bisnis Anda sedang ditangguhkan. Silakan hubungi administrator.');
+                }
             }
         }
 

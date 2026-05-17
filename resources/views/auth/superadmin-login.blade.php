@@ -1,4 +1,7 @@
-<x-guest-layout panelClass="bg-gradient-to-br from-slate-800 via-slate-700 to-indigo-900" heroTitle="Super Admin Panel">
+<x-guest-layout 
+    class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white shadow-2xl border border-slate-700" 
+    heroTitle="Super Admin Panel"
+>
     <x-slot name="title">Super Admin Login</x-slot>
 
     <!-- Page Title -->
@@ -93,7 +96,7 @@
         <!-- Submit -->
         <button
             type="submit"
-            class="w-full flex items-center justify-center px-4 py-3 bg-slate-800 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-150 mt-2"
+            class="w-full flex items-center justify-center px-4 py-3 bg-blue-600 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150 mt-2"
         >
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />

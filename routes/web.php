@@ -45,23 +45,22 @@ Route::middleware(['auth', 'verified', 'role:admin', 'branch'])->group(function 
     Route::post('/transaction/checkout', [App\Http\Controllers\TransactionController::class, 'store'])->name('transaction.store');
     Route::get('/customer', function() { return 'Pelanggan'; })->name('customer.index');
     Route::get('/report', [App\Http\Controllers\ReportController::class, 'index'])->name('report.index');
+    // Setting
     Route::get('/setting', [App\Http\Controllers\SettingController::class, 'index'])->name('setting.index');
     Route::put('/setting/store', [App\Http\Controllers\SettingController::class, 'updateStore'])->name('setting.store');
     Route::put('/setting/account', [App\Http\Controllers\SettingController::class, 'updateAccount'])->name('setting.account');
+
     // Vendor Management (Owner only)
     Route::middleware(['role:admin', 'branch'])->group(function () {
-        // We use admin role for now as requested "owner/admin/cashier" logic in issue.md
-        // but existing role system only has admin/user. 
-        // For now let's use session('active_role') for granular check.
-        
         Route::prefix('vendor')->name('vendor.')->group(function () {
             Route::resource('branches', BranchController::class);
             Route::resource('users', VendorUserController::class);
         });
     });
+});
 
 // Super Admin Auth Routes (terpisah, tidak di auth.php)
-Route::middleware('guest')->prefix('superadmin')->name('superadmin.')->group(function () {
+Route::prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/login', [App\Http\Controllers\Auth\SuperAdminSessionController::class, 'create'])
         ->name('login');
     Route::post('/login', [App\Http\Controllers\Auth\SuperAdminSessionController::class, 'store']);
@@ -76,10 +75,12 @@ Route::middleware(['auth', 'role:super_admin'])
             ->name('dashboard');
         Route::post('/logout', [App\Http\Controllers\Auth\SuperAdminSessionController::class, 'destroy'])
             ->name('logout');
-        // Route::resource('vendors', SuperAdminVendorController::class);
+        
+        Route::resource('vendors', App\Http\Controllers\SuperAdmin\VendorController::class);
     });
 
-    // Profile
+// Profile & Other common auth routes
+Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

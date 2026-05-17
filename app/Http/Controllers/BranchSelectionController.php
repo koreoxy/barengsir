@@ -17,6 +17,9 @@ class BranchSelectionController extends Controller
         }
 
         $branches = $user->vendorUsers()
+            ->whereHas('vendor', function($query) {
+                $query->where('is_active', true);
+            })
             ->with(['branch', 'vendor.branches'])
             ->get()
             ->flatMap(function($vu) {

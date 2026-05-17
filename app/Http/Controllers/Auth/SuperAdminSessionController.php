@@ -9,8 +9,11 @@ use Illuminate\Validation\ValidationException;
 
 class SuperAdminSessionController extends Controller
 {
-    public function create(): \Illuminate\View\View
+    public function create()
     {
+        if (Auth::check() && Auth::user()->role === 'super_admin') {
+            return redirect()->route('superadmin.dashboard');
+        }
         return view('auth.superadmin-login');
     }
 

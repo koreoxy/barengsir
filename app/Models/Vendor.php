@@ -27,4 +27,9 @@ class Vendor extends Model
             ->withPivot('role', 'branch_id', 'is_active')
             ->withTimestamps();
     }
+
+    public function transactions()
+    {
+        return $this->hasManyThrough(Transaction::class, Branch::class);
+    }
 }
