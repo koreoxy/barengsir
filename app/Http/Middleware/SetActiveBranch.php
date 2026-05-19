@@ -25,6 +25,9 @@ class SetActiveBranch
             if (!session()->has('active_branch_id')) {
                 // Except for the selection page itself
                 if (!$request->routeIs('branch.select') && !$request->routeIs('branch.set')) {
+                    if ($request->expectsJson() || $request->ajax()) {
+                        return response()->json(['success' => false, 'message' => 'Sesi branch tidak aktif. Silakan pilih branch terlebih dahulu.'], 403);
+                    }
                     return redirect()->route('branch.select');
                 }
             } else {

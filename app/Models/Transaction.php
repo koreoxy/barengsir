@@ -13,6 +13,8 @@ class Transaction extends Model
         'invoice_number',
         'total_amount',
         'paid_amount',
+        'payment_method',
+        'change_amount',
         'user_id',
         'branch_id'
     ];

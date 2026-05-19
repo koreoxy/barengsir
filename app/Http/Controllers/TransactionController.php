@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use App\Models\StockMovement;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -14,10 +15,24 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        // Get all products that have stock > 0
-        $products = Product::where('stock', '>', 0)->orderBy('name')->get();
-        return view('transaction.index', compact('products'));
+        // Load all active products with category relation (stok 0 tetap ditampilkan tapi disabled)
+        $products = Product::with('category')->orderBy('name')->get();
+
+        // Unique categories from available products
+        $categories = $products
+            ->pluck('category')
+            ->filter()
+            ->unique('id')
+            ->sortBy('name')
+            ->values();
+
+        // Store settings for receipt
+        $settings = Setting::pluck('value', 'key');
+
+        return view('transaction.index', compact('products', 'categories', 'settings'));
     }
+
+
 
     public function store(Request $request)
     {
@@ -25,6 +40,7 @@ class TransactionController extends Controller
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
+            'payment_method' => 'required|in:cash,qris',
             'paid_amount' => 'required|numeric|min:0',
         ]);
 
@@ -53,9 +69,19 @@ class TransactionController extends Controller
                 ];
             }
 
-            // 2. Validate payment
-            if ($validated['paid_amount'] < $totalAmount) {
-                throw new \Exception("Uang pembayaran kurang dari total tagihan.");
+            // 2. Validate and adjust payment
+            $paymentMethod = $validated['payment_method'];
+            $paidAmount = floatval($validated['paid_amount']);
+            $changeAmount = 0;
+
+            if ($paymentMethod === 'cash') {
+                if ($paidAmount < $totalAmount) {
+                    throw new \Exception("Uang pembayaran kurang dari total tagihan.");
+                }
+                $changeAmount = $paidAmount - $totalAmount;
+            } else { // qris
+                $paidAmount = $totalAmount; // automatic fit
+                $changeAmount = 0;
             }
 
             // 3. Create Transaction Header
@@ -63,7 +89,9 @@ class TransactionController extends Controller
             $transaction = Transaction::create([
                 'invoice_number' => $invoiceNumber,
                 'total_amount' => $totalAmount,
-                'paid_amount' => $validated['paid_amount'],
+                'paid_amount' => $paidAmount,
+                'payment_method' => $paymentMethod,
+                'change_amount' => $changeAmount,
                 'user_id' => auth()->id()
             ]);
 
@@ -98,7 +126,9 @@ class TransactionController extends Controller
                 'success' => true,
                 'message' => 'Transaksi berhasil diproses.',
                 'invoice' => $invoiceNumber,
-                'change' => $validated['paid_amount'] - $totalAmount
+                'payment_method' => $paymentMethod,
+                'paid_amount' => $paidAmount,
+                'change' => $changeAmount
             ]);
 
         } catch (\Exception $e) {
