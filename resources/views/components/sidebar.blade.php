@@ -76,6 +76,14 @@
                     @php
                         $hasSubmenus = isset($menu['submenus']);
                         $isActive    = request()->routeIs($menu['route']);
+                        if ($hasSubmenus && !$isActive) {
+                            foreach ($menu['submenus'] as $sub) {
+                                if (request()->routeIs($sub['route'] . '*')) {
+                                    $isActive = true;
+                                    break;
+                                }
+                            }
+                        }
                     @endphp
 
                     {{-- ── Menu item with submenus ──────────────── --}}
@@ -108,7 +116,7 @@
                             <ul x-show="open" x-collapse
                                 class="mt-0.5 ml-5 pl-3 space-y-0.5 border-l border-slate-200">
                                 @foreach($menu['submenus'] as $submenu)
-                                    @php $isSubActive = request()->routeIs($submenu['route']); @endphp
+                                    @php $isSubActive = request()->routeIs($submenu['route'] . '*'); @endphp
                                     <li>
                                         <a href="{{ $submenu['url'] }}"
                                            class="block px-2 py-1.5 rounded-md text-xs

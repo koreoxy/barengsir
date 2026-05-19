@@ -31,9 +31,12 @@ Route::get('/home', [HomeController::class, 'index'])
 
 // Product / Category / Brand routes (admin only)
 Route::middleware(['auth', 'verified', 'role:admin', 'branch'])->group(function () {
+    Route::prefix('product')->group(function () {
+        Route::resource('category', CategoryController::class);
+        Route::resource('brand', BrandController::class);
+    });
+
     Route::resource('product', ProductController::class);
-    Route::resource('category', CategoryController::class);
-    Route::resource('brand', BrandController::class);
 
     Route::get('/products/stock', [ProductController::class, 'stock'])->name('product.stock');
     Route::get('/products/stock-opname', [ProductController::class, 'stockOpname'])->name('product.stock_opname');
