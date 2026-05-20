@@ -13,23 +13,55 @@ class SettingController extends Controller
 {
     public function index()
     {
-        $settings = Setting::all()->pluck('value', 'key');
-        return view('settings.index', compact('settings'));
+        $branch = \App\Models\Branch::with('vendor')->find(session('active_branch_id'));
+        $vendor = $branch ? $branch->vendor : null;
+        
+        return view('settings.index', compact('branch', 'vendor'));
     }
 
     public function updateStore(Request $request)
     {
         $request->validate([
-            'store_name' => 'required|string|max:255',
-            'store_address' => 'required|string|max:255',
-            'store_phone' => 'required|string|max:20',
+            // Data Toko (Vendor)
+            'vendor_name'    => 'required|string|max:255',
+            'vendor_email'   => 'required|string|email|max:255',
+            'vendor_phone'   => 'required|string|max:20',
+            'vendor_address' => 'required|string|max:500',
+            
+            // Data Cabang (Branch)
+            'branch_name'    => 'required|string|max:255',
+            'branch_phone'   => 'required|string|max:20',
+            'branch_address' => 'required|string|max:500',
         ]);
 
-        Setting::updateOrCreate(['key' => 'store_name'], ['value' => $request->store_name]);
-        Setting::updateOrCreate(['key' => 'store_address'], ['value' => $request->store_address]);
-        Setting::updateOrCreate(['key' => 'store_phone'], ['value' => $request->store_phone]);
+        $branch = \App\Models\Branch::with('vendor')->find(session('active_branch_id'));
+        
+        if ($branch) {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($request, $branch) {
+                // A. Update data Cabang Aktif
+                $branch->update([
+                    'name'    => $request->branch_name,
+                    'phone'   => $request->branch_phone,
+                    'address' => $request->branch_address,
+                ]);
 
-        return redirect()->back()->with('success', 'Pengaturan toko berhasil diperbarui.');
+                // B. Update data Toko/Vendor Induk
+                if ($branch->vendor) {
+                    $branch->vendor->update([
+                        'name'    => $request->vendor_name,
+                        'email'   => $request->vendor_email,
+                        'phone'   => $request->vendor_phone,
+                        'address' => $request->vendor_address,
+                    ]);
+                }
+
+                // C. Sinkronkan Session agar perubahan langsung terlihat di UI
+                session(['active_branch_name' => $branch->name]);
+                session(['active_vendor_name' => $branch->vendor->name]);
+            });
+        }
+
+        return redirect()->back()->with('success', 'Informasi toko dan cabang berhasil diperbarui.');
     }
 
     public function updateAccount(Request $request)

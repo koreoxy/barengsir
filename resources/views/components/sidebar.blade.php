@@ -28,11 +28,11 @@
                 </div>
                 <div class="min-w-0">
                     <p class="font-semibold text-slate-800 text-sm leading-none tracking-tight truncate">
-                        {{ config('app.name', 'POS BarengSir') }}
+                        {{ session('active_vendor_name') ?? config('app.name', 'POS BarengSir') }}
                     </p>
                     @if(session('active_branch_name'))
                         <p class="text-[10px] text-slate-500 truncate mt-0.5">
-                            {{ session('active_branch_name') }}
+                            Cabang: {{ session('active_branch_name') }}
                         </p>
                     @endif
                 </div>

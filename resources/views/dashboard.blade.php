@@ -20,7 +20,7 @@
             </div>
 
             <p class="text-slate-300 text-sm mb-1">
-                Hi, <span class="text-blue-300 font-semibold">{{ session('active_branch_name') ?? Auth::user()->name }}</span>
+                Hi, <span class="text-blue-300 font-semibold">{{ session('active_vendor_name') ?? Auth::user()->name }}</span>
             </p>
             <h1 class="text-2xl font-bold text-white tracking-tight leading-none">
                 Welcome back 👋

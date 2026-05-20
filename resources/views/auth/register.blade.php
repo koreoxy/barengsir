@@ -4,7 +4,7 @@
     <!-- Page Title -->
     <div class="mb-8">
         <h2 class="text-3xl font-bold text-slate-800">Buat Akun Baru</h2>
-        <p class="text-slate-500 mt-2">Isi formulir berikut untuk mendaftarkan akun kasir.</p>
+        <p class="text-slate-500 mt-2">Isi formulir berikut untuk mendaftarkan bisnis dan akun pemilik Anda.</p>
     </div>
 
     <form method="POST" action="{{ route('register') }}" class="space-y-5">
@@ -29,7 +29,7 @@
                     required
                     autofocus
                     autocomplete="name"
-                    placeholder="Nama Kasir"
+                    placeholder="Nama Lengkap Pemilik"
                     class="block w-full pl-10 pr-4 py-3 border {{ $errors->has('name') ? 'border-red-400 bg-red-50' : 'border-slate-300 bg-white' }} rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 />
             </div>
@@ -59,7 +59,7 @@
                     value="{{ old('email') }}"
                     required
                     autocomplete="username"
-                    placeholder="kasir@gmail.com"
+                    placeholder="pemilik@bisnis.com"
                     class="block w-full pl-10 pr-4 py-3 border {{ $errors->has('email') ? 'border-red-400 bg-red-50' : 'border-slate-300 bg-white' }} rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 />
             </div>

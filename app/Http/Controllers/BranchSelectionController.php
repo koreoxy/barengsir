@@ -73,9 +73,12 @@ class BranchSelectionController extends Controller
 
     private function setBranchSession($branch)
     {
+        $branch->loadMissing('vendor');
+        
         session(['active_branch_id' => $branch->id]);
         session(['active_branch_name' => $branch->name]);
         session(['active_vendor_id' => $branch->vendor_id]);
+        session(['active_vendor_name' => $branch->vendor->name]);
         
         $vu = auth()->user()->vendorUsers()
             ->where('vendor_id', $branch->vendor_id)
