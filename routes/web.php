@@ -52,6 +52,9 @@ Route::middleware(['auth', 'verified', 'role:admin', 'branch'])->group(function 
         ->name('transaction.store');
     Route::get('/customer', function() { return 'Pelanggan'; })->name('customer.index');
     Route::get('/report', [App\Http\Controllers\ReportController::class, 'index'])->name('report.index');
+    Route::get('/report/export/excel', [App\Http\Controllers\ReportController::class, 'exportExcel'])->name('report.export.excel');
+    Route::get('/report/export/pdf', [App\Http\Controllers\ReportController::class, 'exportPdf'])->name('report.export.pdf');
+    Route::resource('expense', App\Http\Controllers\ExpenseController::class);
     // Setting
     Route::get('/setting', [App\Http\Controllers\SettingController::class, 'index'])->name('setting.index');
     Route::put('/setting/store', [App\Http\Controllers\SettingController::class, 'updateStore'])->name('setting.store');
