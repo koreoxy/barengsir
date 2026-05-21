@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Traits\HasBranch;
+use App\Traits\Auditable;
 
 class Product extends Model
 {
-    use HasBranch;
+    use HasBranch, Auditable;
     protected $fillable = [
         'category_id', 'brand_id', 'branch_id', 'name', 'sku', 'description', 
         'purchase_price', 'selling_price', 'stock', 'image'

@@ -74,4 +74,19 @@ class User extends Authenticatable
             ->withPivot('role', 'branch_id', 'is_active')
             ->withTimestamps();
     }
+
+    /**
+     * Get the active branch of the user.
+     */
+    public function branch()
+    {
+        return $this->hasOneThrough(
+            Branch::class,
+            VendorUser::class,
+            'user_id',
+            'id',
+            'id',
+            'branch_id'
+        );
+    }
 }

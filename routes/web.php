@@ -47,7 +47,9 @@ Route::middleware(['auth', 'verified', 'role:admin', 'branch'])->group(function 
 
     // Transaksi / Kasir
     Route::get('/transaction', [App\Http\Controllers\TransactionController::class, 'index'])->name('transaction.index');
-    Route::post('/transaction/checkout', [App\Http\Controllers\TransactionController::class, 'store'])->name('transaction.store');
+    Route::post('/transaction/checkout', [App\Http\Controllers\TransactionController::class, 'store'])
+        ->middleware('throttle:pos-checkout')
+        ->name('transaction.store');
     Route::get('/customer', function() { return 'Pelanggan'; })->name('customer.index');
     Route::get('/report', [App\Http\Controllers\ReportController::class, 'index'])->name('report.index');
     // Setting
@@ -69,7 +71,8 @@ Route::middleware(['auth', 'verified', 'role:admin', 'branch'])->group(function 
 Route::prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/login', [App\Http\Controllers\Auth\SuperAdminSessionController::class, 'create'])
         ->name('login');
-    Route::post('/login', [App\Http\Controllers\Auth\SuperAdminSessionController::class, 'store']);
+    Route::post('/login', [App\Http\Controllers\Auth\SuperAdminSessionController::class, 'store'])
+        ->middleware('throttle:login-attempts');
 });
 
 // Super Admin Authenticated Routes
@@ -91,6 +94,25 @@ Route::middleware(['auth', 'role:super_admin'])
             ->name('settings');
         Route::post('/settings', [App\Http\Controllers\SuperAdminDashboardController::class, 'updateSettings'])
             ->name('settings.update');
+
+        // Audit & Log Routes
+        Route::get('/audit', [App\Http\Controllers\SuperAdmin\AuditController::class, 'index'])
+            ->name('audit.index');
+
+        // Database Backup & Restore Routes
+        Route::get('/backups', [App\Http\Controllers\SuperAdmin\BackupController::class, 'index'])
+            ->name('backups.index');
+        Route::post('/backups', [App\Http\Controllers\SuperAdmin\BackupController::class, 'store'])
+            ->name('backups.store');
+        Route::get('/backups/download/{filename}', [App\Http\Controllers\SuperAdmin\BackupController::class, 'download'])
+            ->name('backups.download')
+            ->where('filename', '[A-Za-z0-9_.-]+');
+        Route::delete('/backups/{filename}', [App\Http\Controllers\SuperAdmin\BackupController::class, 'destroy'])
+            ->name('backups.destroy')
+            ->where('filename', '[A-Za-z0-9_.-]+');
+        Route::post('/backups/restore/{filename}', [App\Http\Controllers\SuperAdmin\BackupController::class, 'restore'])
+            ->name('backups.restore')
+            ->where('filename', '[A-Za-z0-9_.-]+');
     });
 
 // Profile & Other common auth routes

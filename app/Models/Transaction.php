@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Traits\HasBranch;
+use App\Traits\Auditable;
 
 class Transaction extends Model
 {
-    use HasBranch;
+    use HasBranch, Auditable;
     protected $fillable = [
         'invoice_number',
         'total_amount',
