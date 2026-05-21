@@ -22,40 +22,55 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2">
-                        <label for="name" class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Nama Bisnis / Vendor</label>
+                        <label for="name" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Nama Bisnis / Vendor</label>
                         <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                               class="block w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                               class="block w-full px-4 py-2.5 bg-slate-50 border @error('name') border-rose-500 bg-rose-50/10 focus:border-rose-500 focus:ring-rose-500 @else border-slate-200 focus:border-blue-500 focus:ring-blue-500 @enderror rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:bg-white focus:ring-1 focus:outline-none transition-all duration-150"
                                placeholder="Contoh: Toko Berkah Jaya">
-                        @error('name') <p class="text-xs text-rose-500 font-bold mt-1">{{ $message }}</p> @enderror
+                        @error('name') <p class="text-xs text-rose-600 font-bold mt-1.5 flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            {{ $message }}
+                        </p> @enderror
                     </div>
 
                     <div class="space-y-2">
-                        <label for="email" class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Email Bisnis</label>
+                        <label for="email" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Email Bisnis</label>
                         <input type="email" name="email" id="email" value="{{ old('email') }}" required
-                               class="block w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                               class="block w-full px-4 py-2.5 bg-slate-50 border @error('email') border-rose-500 bg-rose-50/10 focus:border-rose-500 focus:ring-rose-500 @else border-slate-200 focus:border-blue-500 focus:ring-blue-500 @enderror rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:bg-white focus:ring-1 focus:outline-none transition-all duration-150"
                                placeholder="email@bisnis.com">
-                        @error('email') <p class="text-xs text-rose-500 font-bold mt-1">{{ $message }}</p> @enderror
+                        @error('email') <p class="text-xs text-rose-600 font-bold mt-1.5 flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            {{ $message }}
+                        </p> @enderror
                     </div>
 
                     <div class="space-y-2">
-                        <label for="phone" class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Nomor Telepon</label>
+                        <label for="phone" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Nomor Telepon</label>
                         <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
-                               class="block w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                               class="block w-full px-4 py-2.5 bg-slate-50 border @error('phone') border-rose-500 bg-rose-50/10 focus:border-rose-500 focus:ring-rose-500 @else border-slate-200 focus:border-blue-500 focus:ring-blue-500 @enderror rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:bg-white focus:ring-1 focus:outline-none transition-all duration-150"
                                placeholder="0812xxxxxx">
-                        @error('phone') <p class="text-xs text-rose-500 font-bold mt-1">{{ $message }}</p> @enderror
+                        @error('phone') <p class="text-xs text-rose-600 font-bold mt-1.5 flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                            {{ $message }}
+                        </p> @enderror
                     </div>
                 </div>
 
                 <div class="space-y-2">
-                    <label for="address" class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Alamat Pusat</label>
+                    <label for="address" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Alamat Pusat</label>
                     <textarea name="address" id="address" rows="3" 
-                              class="block w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                              class="block w-full px-4 py-2.5 bg-slate-50 border @error('address') border-rose-500 bg-rose-50/10 focus:border-rose-500 focus:ring-rose-500 @else border-slate-200 focus:border-blue-500 focus:ring-blue-500 @enderror rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:bg-white focus:ring-1 focus:outline-none transition-all duration-150"
                               placeholder="Alamat lengkap bisnis...">{{ old('address') }}</textarea>
-                    @error('address') <p class="text-xs text-rose-500 font-bold mt-1">{{ $message }}</p> @enderror
+                    @error('address') <p class="text-xs text-rose-600 font-bold mt-1.5 flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                        {{ $message }}
+                    </p> @enderror
                 </div>
 
-                <div class="pt-6 border-t border-slate-100 flex justify-end">
-                    <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+                <div class="pt-6 border-t border-slate-100 flex justify-end items-center">
+                    <a href="{{ route('superadmin.vendors.index') }}" class="px-6 py-2.5 bg-slate-100 hover:bg-slate-200/80 border border-slate-200/60 active:scale-[0.98] text-slate-700 text-xs font-bold rounded-xl transition-all mr-3">
+                        Batal
+                    </a>
+                    <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-blue-500/15 border border-blue-500/20">
                         Daftarkan Vendor
                     </button>
                 </div>

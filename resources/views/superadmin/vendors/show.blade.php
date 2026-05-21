@@ -51,7 +51,7 @@
                 </div>
 
                 <div class="mt-8">
-                    <a href="{{ route('superadmin.vendors.edit', $vendor) }}" class="flex items-center justify-center w-full py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+                    <a href="{{ route('superadmin.vendors.edit', $vendor) }}" class="flex items-center justify-center w-full py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-blue-500/15 border border-blue-500/20">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         Edit Profil Vendor
                     </a>
@@ -92,51 +92,74 @@
                     <h3 class="font-bold text-slate-800">Daftar Cabang</h3>
                 </div>
                 <div class="p-0 overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="bg-blue-50/50">
+                    <table class="w-full text-left border-collapse hidden md:table">
+                        <thead class="bg-slate-50/50 border-b border-slate-100">
                             <tr>
-                                <th class="px-6 py-3 text-xs font-bold text-blue-800 uppercase tracking-wider text-left">Nama Cabang</th>
-                                <th class="px-6 py-3 text-xs font-bold text-blue-800 uppercase tracking-wider text-left">Kode</th>
-                                <th class="px-6 py-3 text-xs font-bold text-blue-800 uppercase tracking-wider text-left">Kontak</th>
-                                <th class="px-6 py-3 text-xs font-bold text-blue-800 uppercase tracking-wider text-center">Status</th>
+                                <th class="px-6 py-3.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-left">Nama Cabang</th>
+                                <th class="px-6 py-3.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-left">Kode</th>
+                                <th class="px-6 py-3.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-left">Kontak</th>
+                                <th class="px-6 py-3.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Status</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-50">
+                        <tbody class="divide-y divide-slate-100">
                             @forelse($vendor->branches as $branch)
-                            <tr class="hover:bg-slate-50/50 transition-colors">
+                            <tr class="hover:bg-slate-50/50 transition-colors duration-150">
                                 <td class="px-6 py-4">
                                     <p class="text-sm font-bold text-slate-800">{{ $branch->name }}</p>
-                                    <p class="text-xs text-slate-400 line-clamp-1">{{ $branch->address }}</p>
+                                    <p class="text-xs text-slate-400 line-clamp-1 mt-0.5">{{ $branch->address }}</p>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-xs font-black bg-slate-100 text-slate-600 px-2 py-1 rounded">{{ $branch->code }}</span>
+                                    <span class="text-xs font-black bg-slate-50 text-slate-600 px-2.5 py-1 rounded-lg border border-slate-200/40 font-mono">{{ $branch->code }}</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     <p class="text-xs font-bold text-slate-700">{{ $branch->phone ?? '-' }}</p>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     @if($branch->is_active)
-                                        <span class="text-emerald-500">
-                                            <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100/50 shadow-sm shadow-emerald-50/50 animate-pulse">
+                                            Active
                                         </span>
                                     @else
-                                        <span class="text-slate-300">
-                                            <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-100/50 shadow-sm shadow-rose-50/50">
+                                            Suspended
                                         </span>
                                     @endif
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-8 text-center text-slate-400 text-sm italic">Belum ada cabang.</td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="px-6 py-8 text-center text-slate-400 text-sm italic">Belum ada cabang.</td>
+                                <td colspan="4" class="px-6 py-8 text-center text-slate-400 text-xs font-medium">Belum ada cabang.</td>
                             </tr>
                             @endforelse
                         </tbody>
                     </table>
+
+                    <!-- Mobile Card Layout -->
+                    <div class="block md:hidden divide-y divide-slate-100">
+                        @forelse($vendor->branches as $branch)
+                        <div class="p-4 hover:bg-slate-50/50 transition-colors duration-150">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-slate-800">{{ $branch->name }}</span>
+                                @if($branch->is_active)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100/50 animate-pulse">
+                                        Active
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-100/50">
+                                        Suspended
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-[10px] text-slate-400 line-clamp-2">{{ $branch->address }}</p>
+                            <div class="flex justify-between items-center text-[10px] text-slate-400 mt-3 pt-2 border-t border-slate-100/50">
+                                <span class="bg-slate-50 text-slate-700 font-bold px-2 py-0.5 rounded border border-slate-200/40 font-mono">{{ $branch->code }}</span>
+                                <span class="font-semibold text-slate-600">{{ $branch->phone ?? '-' }}</span>
+                            </div>
+                        </div>
+                        @empty
+                        <div class="p-6 text-center text-slate-400 text-xs font-medium">Belum ada cabang.</div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
 

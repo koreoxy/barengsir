@@ -80,6 +80,14 @@ Route::middleware(['auth', 'role:super_admin'])
             ->name('logout');
         
         Route::resource('vendors', App\Http\Controllers\SuperAdmin\VendorController::class);
+
+        // New Feature Routes
+        Route::get('/reports', [App\Http\Controllers\SuperAdminDashboardController::class, 'reports'])
+            ->name('reports');
+        Route::get('/settings', [App\Http\Controllers\SuperAdminDashboardController::class, 'settings'])
+            ->name('settings');
+        Route::post('/settings', [App\Http\Controllers\SuperAdminDashboardController::class, 'updateSettings'])
+            ->name('settings.update');
     });
 
 // Profile & Other common auth routes

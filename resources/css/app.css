@@ -5,3 +5,48 @@
 [x-cloak] {
     display: none !important;
 }
+
+/* Custom styling for Laravel pagination to avoid dull white buttons */
+nav[role="navigation"] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav[role="navigation"] a,
+nav[role="navigation"] span[aria-current="page"] > span,
+nav[role="navigation"] span[aria-disabled="true"] > span {
+    border-radius: 0.75rem !important; /* rounded-xl */
+    font-size: 0.75rem !important; /* text-xs */
+    font-weight: 700 !important; /* font-bold */
+    padding: 0.625rem 1.25rem !important; /* px-5 py-2.5 */
+    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Normal/Inactive Link Buttons */
+nav[role="navigation"] a {
+    background-color: #f1f5f9 !important; /* bg-slate-100 */
+    border: 1px solid rgba(226, 232, 240, 0.8) !important; /* border-slate-200 */
+    color: #475569 !important; /* text-slate-600 */
+}
+nav[role="navigation"] a:hover {
+    background-color: #e2e8f0 !important; /* bg-slate-200 */
+    color: #1e293b !important; /* text-slate-800 */
+    transform: scale(0.98);
+}
+
+/* Active Page Button */
+nav[role="navigation"] span[aria-current="page"] > span {
+    background-image: linear-gradient(to right, #2563eb, #4f46e5) !important; /* bg-gradient-to-r from-blue-600 to-indigo-600 */
+    border: 1px solid rgba(59, 130, 246, 0.2) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2), 0 2px 4px -1px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Disabled Page Button */
+nav[role="navigation"] span[aria-disabled="true"] > span {
+    background-color: #f8fafc !important; /* bg-slate-50 */
+    border: 1px solid #f1f5f9 !important; /* border-slate-100 */
+    color: #cbd5e1 !important; /* text-slate-300 */
+    cursor: not-allowed;
+}
