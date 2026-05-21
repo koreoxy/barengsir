@@ -31,6 +31,12 @@ class SetActiveBranch
                     return redirect()->route('branch.select');
                 }
             } else {
+                // Set timezone dinamis per branch
+                $branchId = session('active_branch_id');
+                $timezone = \App\Services\SettingService::get('store_timezone', 'Asia/Jakarta', $branchId);
+                date_default_timezone_set($timezone);
+                config(['app.timezone' => $timezone]);
+
                 // If branch is selected, check if vendor is still active
                 $vendorId = session('active_vendor_id');
                 $vendorActive = \App\Models\Vendor::where('id', $vendorId)->where('is_active', true)->exists();

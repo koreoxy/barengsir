@@ -20,7 +20,7 @@
         </div>
     </x-slot>
 
-    <div class="py-8">
+    <div class="py-8" x-data="{ activeTab: 'store' }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             <!-- Flash Messages -->
@@ -38,12 +38,52 @@
                 </div>
             @endif
 
-            <!-- 2-Column Grid Container -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            @if(session('error'))
+                <div class="flex items-center gap-3 bg-red-50 border border-red-200 text-red-800 px-4 py-3.5 rounded-2xl shadow-sm animate-fade-in" role="alert">
+                    <div class="shrink-0 w-6 h-6 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                    <div>
+                        <strong class="font-semibold text-sm">Error!</strong>
+                        <span class="text-xs block mt-0.5">{{ session('error') }}</span>
+                    </div>
+                </div>
+            @endif
 
-                <!-- Column 1: Toko / Branch Settings -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
-                    {{-- Header Card --}}
+            <!-- Navigation Tabs -->
+            <div class="flex border-b border-slate-200 gap-6 overflow-x-auto pb-1.5 scrollbar-none">
+                <button @click="activeTab = 'store'" 
+                        :class="activeTab === 'store' ? 'border-blue-600 text-blue-600 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'"
+                        class="py-3 px-1 border-b-2 text-sm whitespace-nowrap transition-all focus:outline-none flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    <span>Profil Toko & Cabang</span>
+                </button>
+                <button @click="activeTab = 'system'" 
+                        :class="activeTab === 'system' ? 'border-blue-600 text-blue-600 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'"
+                        class="py-3 px-1 border-b-2 text-sm whitespace-nowrap transition-all focus:outline-none flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>Pengaturan Sistem POS</span>
+                </button>
+                <button @click="activeTab = 'account'" 
+                        :class="activeTab === 'account' ? 'border-purple-600 text-purple-600 font-bold' : 'border-transparent text-slate-500 hover:text-slate-700'"
+                        class="py-3 px-1 border-b-2 text-sm whitespace-nowrap transition-all focus:outline-none flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.952 11.952 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <span>Keamanan Akun</span>
+                </button>
+            </div>
+
+            <!-- TAB 1: PROFIL TOKO & CABANG -->
+            <div x-show="activeTab === 'store'" class="max-w-4xl mx-auto space-y-6 animate-fade-in">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                     <div class="p-6 sm:p-8 border-b border-slate-100 bg-slate-50/50">
                         <div class="flex items-center gap-3.5">
                             <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
@@ -58,20 +98,18 @@
                         </div>
                     </div>
 
-                    {{-- Form --}}
-                    <form method="post" action="{{ route('setting.store') }}" class="p-6 sm:p-8 space-y-6 flex-1 flex flex-col justify-between">
+                    <form method="post" action="{{ route('setting.store') }}" class="p-6 sm:p-8 space-y-6">
                         @csrf
                         @method('put')
 
                         <div class="space-y-6">
-                            <!-- BAGIAN A: INFORMASI UTAMA TOKO (VENDOR) -->
+                            <!-- Profil Toko -->
                             <div class="border-b border-slate-100 pb-5">
                                 <div class="flex items-center gap-2 mb-4">
                                     <div class="h-1.5 w-6 rounded bg-blue-500"></div>
                                     <h4 class="text-xs font-bold text-blue-600 uppercase tracking-widest">A. Profil Toko (Pusat / Vendor)</h4>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {{-- Vendor Name --}}
                                     <div>
                                         <label for="vendor_name" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Toko</label>
                                         <input id="vendor_name" 
@@ -82,13 +120,11 @@
                                                required />
                                         @error('vendor_name')
                                             <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
-                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
                                                 {{ $message }}
                                             </p>
                                         @enderror
                                     </div>
 
-                                    {{-- Vendor Email --}}
                                     <div>
                                         <label for="vendor_email" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Email Toko</label>
                                         <input id="vendor_email" 
@@ -99,13 +135,11 @@
                                                required />
                                         @error('vendor_email')
                                             <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
-                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
                                                 {{ $message }}
                                             </p>
                                         @enderror
                                     </div>
 
-                                    {{-- Vendor Phone --}}
                                     <div class="md:col-span-2">
                                         <label for="vendor_phone" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">No. Telepon Toko</label>
                                         <input id="vendor_phone" 
@@ -116,13 +150,11 @@
                                                required />
                                         @error('vendor_phone')
                                             <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
-                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
                                                 {{ $message }}
                                             </p>
                                         @enderror
                                     </div>
 
-                                    {{-- Vendor Address --}}
                                     <div class="md:col-span-2">
                                         <label for="vendor_address" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat Kantor Toko (Pusat)</label>
                                         <textarea id="vendor_address" 
@@ -132,7 +164,6 @@
                                                   required>{{ old('vendor_address', $vendor->address ?? '') }}</textarea>
                                         @error('vendor_address')
                                             <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
-                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
                                                 {{ $message }}
                                             </p>
                                         @enderror
@@ -140,14 +171,13 @@
                                 </div>
                             </div>
 
-                            <!-- BAGIAN B: INFORMASI DETAIL CABANG (BRANCH) -->
+                            <!-- Detail Cabang Aktif -->
                             <div>
                                 <div class="flex items-center gap-2 mb-4">
                                     <div class="h-1.5 w-6 rounded bg-purple-500"></div>
                                     <h4 class="text-xs font-bold text-purple-600 uppercase tracking-widest">B. Detail Cabang Aktif</h4>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {{-- Branch Name --}}
                                     <div>
                                         <label for="branch_name" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Cabang</label>
                                         <input id="branch_name" 
@@ -158,13 +188,11 @@
                                                required />
                                         @error('branch_name')
                                             <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
-                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
                                                 {{ $message }}
                                             </p>
                                         @enderror
                                     </div>
 
-                                    {{-- Branch Phone --}}
                                     <div>
                                         <label for="branch_phone" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">No. Telepon Cabang</label>
                                         <input id="branch_phone" 
@@ -175,13 +203,11 @@
                                                required />
                                         @error('branch_phone')
                                             <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
-                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
                                                 {{ $message }}
                                             </p>
                                         @enderror
                                     </div>
 
-                                    {{-- Branch Address --}}
                                     <div class="md:col-span-2">
                                         <label for="branch_address" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat Cabang</label>
                                         <textarea id="branch_address" 
@@ -191,7 +217,6 @@
                                                   required>{{ old('branch_address', $branch->address ?? '') }}</textarea>
                                         @error('branch_address')
                                             <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
-                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
                                                 {{ $message }}
                                             </p>
                                         @enderror
@@ -200,7 +225,7 @@
                             </div>
                         </div>
 
-                        <div class="pt-6 mt-8 border-t border-slate-100 flex justify-end">
+                        <div class="pt-6 border-t border-slate-100 flex justify-end">
                             <button type="submit" 
                                     class="inline-flex items-center justify-center px-5 py-3 bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/35 transition-all duration-150">
                                 {{ __('Simpan Pengaturan Toko & Cabang') }}
@@ -208,11 +233,181 @@
                         </div>
                     </form>
                 </div>
+            </div>
 
-                <!-- Column 2: Account & Security Settings -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col"
-                     x-data="{ showCurrent: false, showNew: false, showConfirm: false }">
-                    {{-- Header Card --}}
+            <!-- TAB 2: PENGATURAN SISTEM POS -->
+            <div x-show="activeTab === 'system'" class="space-y-8 animate-fade-in">
+                <form method="post" action="{{ route('setting.system') }}" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    @csrf
+                    @method('put')
+
+                    <!-- KIRI: GENERAL SETTINGS -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sm:p-8 space-y-6 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-3.5 mb-6">
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-md font-bold text-slate-800">General Settings</h3>
+                                    <p class="text-xs text-slate-500 mt-0.5">Konfigurasi visual utama dan aturan penanggalan tokomu.</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-5">
+                                <!-- Upload Logo Toko dengan Live Preview (Alpine.js) -->
+                                <div x-data="{ logoPreview: '{{ setting('store_logo') ? asset('storage/' . setting('store_logo')) : '' }}' }">
+                                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Logo Toko (Format Struk & Invoice)</label>
+                                    <div class="flex items-center gap-5">
+                                        <div class="w-20 h-20 rounded-2xl bg-slate-50 border border-dashed border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
+                                            <template x-if="logoPreview">
+                                                <img :src="logoPreview" class="w-full h-full object-cover">
+                                            </template>
+                                            <template x-if="!logoPreview">
+                                                <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </template>
+                                        </div>
+                                        <div class="flex-1">
+                                            <input type="file" 
+                                                   id="store_logo" 
+                                                   name="store_logo" 
+                                                   class="hidden" 
+                                                   accept="image/*"
+                                                   @change="const file = $event.target.files[0]; if (file) { logoPreview = URL.createObjectURL(file); }">
+                                            <label for="store_logo" 
+                                                   class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors active:scale-98">
+                                                Pilih Gambar Logo
+                                            </label>
+                                            <p class="text-[10px] text-slate-400 mt-2">Mendukung PNG/JPG. Ukuran maksimal 2MB.</p>
+                                        </div>
+                                    </div>
+                                    @error('store_logo')
+                                        <p class="mt-2 text-xs text-red-500 font-medium">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Pilihan Mata Uang -->
+                                <div>
+                                    <label for="store_currency" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Mata Uang Default</label>
+                                    <select id="store_currency" 
+                                            name="store_currency" 
+                                            class="block w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-600 focus:bg-white transition-all">
+                                        <option value="IDR" {{ setting('store_currency', 'IDR') == 'IDR' ? 'selected' : '' }}>Rupiah (IDR)</option>
+                                        <option value="USD" {{ setting('store_currency') == 'USD' ? 'selected' : '' }}>Dollar (USD)</option>
+                                        <option value="SGD" {{ setting('store_currency') == 'SGD' ? 'selected' : '' }}>Singapore Dollar (SGD)</option>
+                                        <option value="EUR" {{ setting('store_currency') == 'EUR' ? 'selected' : '' }}>Euro (EUR)</option>
+                                    </select>
+                                    @error('store_currency')
+                                        <p class="mt-2 text-xs text-red-500 font-medium">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Pilihan Zona Waktu -->
+                                <div>
+                                    <label for="store_timezone" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Zona Waktu Sistem</label>
+                                    <select id="store_timezone" 
+                                            name="store_timezone" 
+                                            class="block w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-600 focus:bg-white transition-all">
+                                        <option value="Asia/Jakarta" {{ setting('store_timezone', 'Asia/Jakarta') == 'Asia/Jakarta' ? 'selected' : '' }}>WIB (Asia/Jakarta)</option>
+                                        <option value="Asia/Makassar" {{ setting('store_timezone') == 'Asia/Makassar' ? 'selected' : '' }}>WITA (Asia/Makassar)</option>
+                                        <option value="Asia/Jayapura" {{ setting('store_timezone') == 'Asia/Jayapura' ? 'selected' : '' }}>WIT (Asia/Jayapura)</option>
+                                        <option value="UTC" {{ setting('store_timezone') == 'UTC' ? 'selected' : '' }}>UTC (Waktu Standar)</option>
+                                    </select>
+                                    @error('store_timezone')
+                                        <p class="mt-2 text-xs text-red-500 font-medium">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KANAN: POS SETTINGS -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sm:p-8 space-y-6 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-3.5 mb-6">
+                                <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-md font-bold text-slate-800">POS & Kasir Settings</h3>
+                                    <p class="text-xs text-slate-500 mt-0.5">Konfigurasi operasional kasir, printer, dan format struk belanja.</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-5">
+                                <!-- Pajak Default -->
+                                <div>
+                                    <label for="default_tax" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pajak Transaksi Default (%)</label>
+                                    <div class="relative">
+                                        <input id="default_tax" 
+                                               name="default_tax" 
+                                               type="number" 
+                                               step="0.01" 
+                                               min="0" 
+                                               max="100"
+                                               class="block w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-600 focus:bg-white transition-all" 
+                                               value="{{ old('default_tax', setting('default_tax', '0')) }}" 
+                                               required />
+                                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400 font-bold text-sm">
+                                            %
+                                        </div>
+                                    </div>
+                                    @error('default_tax')
+                                        <p class="mt-2 text-xs text-red-500 font-medium">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Printer Default -->
+                                <div>
+                                    <label for="default_printer" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Nama / IP Printer Default</label>
+                                    <input id="default_printer" 
+                                           name="default_printer" 
+                                           type="text" 
+                                           placeholder="Contoh: POS-58 atau 192.168.1.200"
+                                           class="block w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-600 focus:bg-white transition-all" 
+                                           value="{{ old('default_printer', setting('default_printer', '')) }}" />
+                                    @error('default_printer')
+                                        <p class="mt-2 text-xs text-red-500 font-medium">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- Format Struk -->
+                                <div>
+                                    <label for="receipt_format" class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Format Ukuran Kertas Struk</label>
+                                    <select id="receipt_format" 
+                                            name="receipt_format" 
+                                            class="block w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-600 focus:bg-white transition-all">
+                                        <option value="58mm" {{ setting('receipt_format', '58mm') == '58mm' ? 'selected' : '' }}>Thermal 58mm</option>
+                                        <option value="80mm" {{ setting('receipt_format') == '80mm' ? 'selected' : '' }}>Thermal 80mm</option>
+                                        <option value="A4" {{ setting('receipt_format') == 'A4' ? 'selected' : '' }}>Faktur A4 (Standard Inkjet)</option>
+                                    </select>
+                                    @error('receipt_format')
+                                        <p class="mt-2 text-xs text-red-500 font-medium">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-slate-100 flex justify-end">
+                            <button type="submit" 
+                                    class="inline-flex items-center justify-center px-5 py-3 bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/35 transition-all duration-150">
+                                Simpan Pengaturan Sistem
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- TAB 3: KEAMANAN AKUN -->
+            <div x-show="activeTab === 'account'" class="max-w-4xl mx-auto space-y-6 animate-fade-in" x-data="{ showCurrent: false, showNew: false, showConfirm: false }">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                     <div class="p-6 sm:p-8 border-b border-slate-100 bg-slate-50/50">
                         <div class="flex items-center gap-3.5">
                             <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
@@ -227,47 +422,37 @@
                         </div>
                     </div>
 
-                    {{-- Form --}}
-                    <form method="post" action="{{ route('setting.account') }}" class="p-6 sm:p-8 space-y-6 flex-1 flex flex-col justify-between">
+                    <form method="post" action="{{ route('setting.account') }}" class="p-6 sm:p-8 space-y-6">
                         @csrf
                         @method('put')
 
                         <div class="space-y-5">
-                            {{-- Name Input --}}
                             <div>
                                 <label for="name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Nama Lengkap</label>
                                 <input id="name" 
                                        name="name" 
                                        type="text" 
-                                       class="block w-full px-4 py-3 rounded-xl border {{ $errors->has('name') ? 'border-red-400 bg-red-50 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-200 bg-slate-50/50 focus:ring-blue-500/20 focus:border-blue-600' }} text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:bg-white transition-all" 
+                                       class="block w-full px-4 py-3 rounded-xl border {{ $errors->has('name') ? 'border-red-400 bg-red-50 focus:ring-red-500/20' : 'border-slate-200 bg-slate-50/50 focus:ring-blue-500/20 focus:border-blue-600' }} text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:bg-white transition-all" 
                                        value="{{ old('name', auth()->user()->name) }}" 
                                        required />
                                 @error('name')
-                                    <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                                        {{ $message }}
-                                    </p>
+                                    <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            {{-- Email Input --}}
                             <div>
                                 <label for="email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Email</label>
                                 <input id="email" 
                                        name="email" 
                                        type="email" 
-                                       class="block w-full px-4 py-3 rounded-xl border {{ $errors->has('email') ? 'border-red-400 bg-red-50 focus:ring-red-500/20 focus:border-red-500' : 'border-slate-200 bg-slate-50/50 focus:ring-blue-500/20 focus:border-blue-600' }} text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:bg-white transition-all" 
+                                       class="block w-full px-4 py-3 rounded-xl border {{ $errors->has('email') ? 'border-red-400 bg-red-50 focus:ring-red-500/20' : 'border-slate-200 bg-slate-50/50 focus:ring-blue-500/20' }} text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:bg-white transition-all" 
                                        value="{{ old('email', auth()->user()->email) }}" 
                                        required />
                                 @error('email')
-                                    <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                                        {{ $message }}
-                                    </p>
+                                    <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            {{-- Optional Password Change Section --}}
                             <div class="border-t border-slate-100 pt-6 mt-6">
                                 <div class="flex items-center gap-2 mb-4">
                                     <div class="h-1 w-6 rounded bg-purple-500"></div>
@@ -275,7 +460,6 @@
                                 </div>
                                 
                                 <div class="space-y-4">
-                                    {{-- Current Password Input --}}
                                     <div>
                                         <label for="current_password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Kata Sandi Saat Ini</label>
                                         <div class="relative">
@@ -296,14 +480,10 @@
                                             </button>
                                         </div>
                                         @error('current_password')
-                                            <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
-                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                                                {{ $message }}
-                                            </p>
+                                            <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">{{ $message }}</p>
                                         @enderror
                                     </div>
 
-                                    {{-- New Password Input --}}
                                     <div>
                                         <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Kata Sandi Baru</label>
                                         <div class="relative">
@@ -324,14 +504,10 @@
                                             </button>
                                         </div>
                                         @error('password')
-                                            <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
-                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                                                {{ $message }}
-                                            </p>
+                                            <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">{{ $message }}</p>
                                         @enderror
                                     </div>
 
-                                    {{-- Confirm Password Input --}}
                                     <div>
                                         <label for="password_confirmation" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Konfirmasi Kata Sandi Baru</label>
                                         <div class="relative">
@@ -352,17 +528,14 @@
                                             </button>
                                         </div>
                                         @error('password_confirmation')
-                                            <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">
-                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                                                {{ $message }}
-                                            </p>
+                                            <p class="mt-2 text-xs text-red-500 font-medium flex items-center gap-1">{{ $message }}</p>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="pt-6 mt-8 border-t border-slate-100 flex justify-end">
+                        <div class="pt-6 border-t border-slate-100 flex justify-end">
                             <button type="submit" 
                                     class="inline-flex items-center justify-center px-5 py-3 bg-purple-600 hover:bg-purple-500 active:scale-[0.98] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35 transition-all duration-150">
                                 {{ __('Simpan Pengaturan Akun') }}
@@ -370,7 +543,6 @@
                         </div>
                     </form>
                 </div>
-
             </div>
 
         </div>

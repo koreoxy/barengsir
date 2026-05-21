@@ -26,10 +26,11 @@ class TransactionController extends Controller
             ->sortBy('name')
             ->values();
 
-        // Store settings for receipt
-        $settings = Setting::pluck('value', 'key');
+        // Store settings and active branch for receipt
+        $branch = \App\Models\Branch::find(session('active_branch_id'));
+        $settings = \App\Services\SettingService::all(session('active_branch_id'));
 
-        return view('transaction.index', compact('products', 'categories', 'settings'));
+        return view('transaction.index', compact('products', 'categories', 'settings', 'branch'));
     }
 
 
@@ -67,6 +68,13 @@ class TransactionController extends Controller
                     'price' => $product->selling_price,
                     'subtotal' => $subtotal
                 ];
+            }
+
+            // Calculate and add branch default tax
+            $taxPercent = floatval(setting('default_tax', 0));
+            if ($taxPercent > 0) {
+                $taxAmount = $totalAmount * ($taxPercent / 100);
+                $totalAmount = round($totalAmount + $taxAmount, 2);
             }
 
             // 2. Validate and adjust payment

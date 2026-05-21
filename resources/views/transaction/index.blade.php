@@ -104,11 +104,11 @@
                             {{-- Stock insufficient flash (saat klik tapi stok di cart sudah max) --}}
                             <div x-show="stockAlert === product.id"
                                  x-transition:enter="transition ease-out duration-150"
-                                 x-transition:enter-start="opacity-0 scale-95"
-                                 x-transition:enter-end="opacity-100 scale-100"
-                                 x-transition:leave="transition ease-in duration-200"
-                                 x-transition:leave-start="opacity-100"
-                                 x-transition:leave-end="opacity-0"
+                                  x-transition:enter-start="opacity-0 scale-95"
+                                  x-transition:enter-end="opacity-100 scale-100"
+                                  x-transition:leave="transition ease-in duration-200"
+                                  x-transition:leave-start="opacity-100"
+                                  x-transition:leave-end="opacity-0"
                                  class="absolute inset-0 bg-orange-600/90 flex flex-col items-center justify-center backdrop-blur-[1px] z-30">
                                 <svg class="w-8 h-8 text-white mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
@@ -132,7 +132,7 @@
                             <p class="text-[10px] text-slate-400 mb-0.5" x-text="product.category ? product.category.name : '-'"></p>
                             <h4 class="text-sm font-semibold text-slate-800 leading-tight line-clamp-2 flex-1" x-text="product.name"></h4>
                             <p class="text-sm font-bold mt-2" :class="product.stock <= 0 ? 'text-slate-400' : 'text-blue-600'"
-                               x-text="formatRupiah(product.selling_price)"></p>
+                               x-text="formatCurrency(product.selling_price)"></p>
                         </div>
                     </div>
                 </template>
@@ -216,7 +216,7 @@
                     <div class="flex items-start justify-between gap-2 mb-2.5">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-semibold text-slate-800 line-clamp-1" x-text="item.name"></p>
-                            <p class="text-xs text-blue-600 font-medium mt-0.5" x-text="formatRupiah(item.price)"></p>
+                            <p class="text-xs text-blue-600 font-medium mt-0.5" x-text="formatCurrency(item.price)"></p>
                         </div>
                         <button @click="removeFromCart(index)"
                                 class="shrink-0 w-6 h-6 rounded-lg bg-slate-200 hover:bg-red-100 hover:text-red-500 flex items-center justify-center text-slate-400 transition-colors">
@@ -233,7 +233,7 @@
                             <button @click="increaseQty(index)"
                                     class="w-8 h-8 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors font-bold">+</button>
                         </div>
-                        <p class="text-sm font-bold text-slate-800" x-text="formatRupiah(item.price * item.quantity)"></p>
+                        <p class="text-sm font-bold text-slate-800" x-text="formatCurrency(item.price * item.quantity)"></p>
                     </div>
                 </div>
             </template>
@@ -243,11 +243,17 @@
         <div class="shrink-0 border-t border-slate-100 px-5 py-4 space-y-3">
             <div class="flex justify-between text-sm text-slate-500">
                 <span>Subtotal</span>
-                <span class="font-medium text-slate-700" x-text="formatRupiah(totalAmount)"></span>
+                <span class="font-medium text-slate-700" x-text="formatCurrency(subtotalAmount)"></span>
             </div>
+            <template x-if="taxPercent > 0">
+                <div class="flex justify-between text-sm text-slate-500">
+                    <span>Pajak (PPN <span x-text="taxPercent"></span>%)</span>
+                    <span class="font-medium text-slate-700" x-text="formatCurrency(taxAmount)"></span>
+                </div>
+            </template>
             <div class="flex justify-between items-center py-1.5 border-t border-dashed border-slate-200">
                 <span class="text-base font-bold text-slate-800">Total</span>
-                <span class="text-xl font-extrabold text-blue-600" x-text="formatRupiah(totalAmount)"></span>
+                <span class="text-xl font-extrabold text-blue-600" x-text="formatCurrency(totalAmount)"></span>
             </div>
 
             {{-- Opsi Metode Pembayaran --}}
@@ -303,7 +309,7 @@
             {{-- Kembalian (hanya untuk cash) --}}
             <div x-show="paymentMethod === 'cash'" class="flex justify-between items-center text-sm px-1 py-0.5">
                 <span class="text-slate-500">Kembalian</span>
-                <span class="font-bold text-base" :class="changeAmount < 0 ? 'text-red-500' : 'text-emerald-600'" x-text="formatRupiah(changeAmount)"></span>
+                <span class="font-bold text-base" :class="changeAmount < 0 ? 'text-red-500' : 'text-emerald-600'" x-text="formatCurrency(changeAmount)"></span>
             </div>
 
             <button type="button" @click.prevent="processCheckout"
@@ -361,18 +367,22 @@
             {{-- Struk body (ini yang akan dicetak) --}}
             <div id="receipt-area" class="px-6 py-5">
 
-                {{-- Nama Toko --}}
-                <div class="text-center mb-4">
+                {{-- Nama Toko & Logo --}}
+                <div class="text-center mb-4 border-b border-dashed border-slate-300 pb-3">
+                    @if(setting('store_logo'))
+                        <div class="flex justify-center mb-3">
+                            <img src="{{ asset('storage/' . setting('store_logo')) }}" class="h-12 w-auto object-contain">
+                        </div>
+                    @endif
                     <h2 class="text-base font-extrabold text-slate-900 tracking-wide uppercase">
-                        {{ $settings['store_name'] ?? config('app.name') }}
+                        {{ $branch->name ?? config('app.name') }}
                     </h2>
-                    @if(!empty($settings['address']))
-                    <p class="text-xs text-slate-500 mt-0.5">{{ $settings['address'] }}</p>
+                    @if(!empty($branch->address))
+                        <p class="text-[10px] text-slate-500 mt-0.5 leading-tight">{{ $branch->address }}</p>
                     @endif
-                    @if(!empty($settings['phone']))
-                    <p class="text-xs text-slate-500">Telp: {{ $settings['phone'] }}</p>
+                    @if(!empty($branch->phone))
+                        <p class="text-[10px] text-slate-500">Telp: {{ $branch->phone }}</p>
                     @endif
-                    <div class="mt-3 border-t border-dashed border-slate-300"></div>
                 </div>
 
                 {{-- Info Transaksi --}}
@@ -405,9 +415,9 @@
                             <div class="flex justify-between items-center mt-0.5">
                                 <span class="text-xs text-slate-500">
                                     <span x-text="item.quantity"></span> x
-                                    <span x-text="formatRupiah(item.price)"></span>
+                                    <span x-text="formatCurrency(item.price)"></span>
                                 </span>
-                                <span class="text-xs font-bold text-slate-800" x-text="formatRupiah(item.price * item.quantity)"></span>
+                                <span class="text-xs font-bold text-slate-800" x-text="formatCurrency(item.price * item.quantity)"></span>
                             </div>
                         </div>
                     </template>
@@ -419,20 +429,26 @@
                 <div class="space-y-1.5 text-xs">
                     <div class="flex justify-between text-slate-600">
                         <span>Subtotal</span>
-                        <span x-text="formatRupiah(lastTotal)"></span>
+                        <span x-text="formatCurrency(lastItems.reduce((s, i) => s + i.price * i.quantity, 0))"></span>
                     </div>
+                    <template x-if="taxPercent > 0">
+                        <div class="flex justify-between text-slate-600">
+                            <span>Pajak (PPN <span x-text="taxPercent"></span>%)</span>
+                            <span x-text="formatCurrency(lastItems.reduce((s, i) => s + i.price * i.quantity, 0) * (taxPercent / 100))"></span>
+                        </div>
+                    </template>
                     <div class="flex justify-between font-bold text-slate-800 text-sm border-t border-slate-200 pt-1.5 mt-1.5">
                         <span>TOTAL</span>
-                        <span x-text="formatRupiah(lastTotal)"></span>
+                        <span x-text="formatCurrency(lastTotal)"></span>
                     </div>
                     <div class="flex justify-between text-slate-600">
                         <span x-text="lastPaymentMethod === 'cash' ? 'Bayar (Tunai)' : 'Bayar (QRIS)'"></span>
-                        <span x-text="formatRupiah(lastPaid)"></span>
+                        <span x-text="formatCurrency(lastPaid)"></span>
                     </div>
                     <template x-if="lastPaymentMethod === 'cash'">
                         <div class="flex justify-between font-bold text-emerald-700 text-sm">
                             <span>Kembalian</span>
-                            <span x-text="formatRupiah(lastChange)"></span>
+                            <span x-text="formatCurrency(lastChange)"></span>
                         </div>
                     </template>
                 </div>
@@ -485,7 +501,7 @@
                 display: block !important;
                 position: absolute !important;
                 top: 0 !important; left: 0 !important;
-                width: 80mm !important;
+                width: {{ setting('receipt_format', '58mm') == '80mm' ? '80mm' : (setting('receipt_format') == 'A4' ? '210mm' : '58mm') }} !important;
                 padding: 4mm !important;
                 font-family: 'Courier New', monospace !important;
                 font-size: 10pt !important;
@@ -495,7 +511,12 @@
             .no-print { display: none !important; }
         }
     </style>
-    <div style="text-align:center; font-family: 'Courier New', monospace; width:80mm; margin:0 auto;">
+    <div style="text-align:center; font-family: 'Courier New', monospace; width: {{ setting('receipt_format', '58mm') == '80mm' ? '80mm' : (setting('receipt_format') == 'A4' ? '210mm' : '58mm') }}; margin:0 auto;">
+        @if(setting('store_logo'))
+            <div style="margin-bottom: 6px;">
+                <img src="{{ asset('storage/' . setting('store_logo')) }}" style="max-height: 40px; width: auto; filter: grayscale(100%);">
+            </div>
+        @endif
         <div style="font-size:13pt; font-weight:900; letter-spacing:1px;" id="pr-store"></div>
         <div style="font-size:8pt; margin-top:2px;" id="pr-address"></div>
         <div style="font-size:8pt;" id="pr-phone"></div>
@@ -515,6 +536,10 @@
             <tr>
                 <td style="padding: 2px 0;">Subtotal</td>
                 <td style="padding: 2px 0; text-align: right;" id="pr-subtotal"></td>
+            </tr>
+            <tr id="pr-tax-row" style="display: none;">
+                <td style="padding: 2px 0;">Pajak (PPN <span id="pr-tax-percent"></span>%)</td>
+                <td style="padding: 2px 0; text-align: right;" id="pr-tax-amount"></td>
             </tr>
             <tr style="font-weight: 900; font-size: 9pt; border-top: 1px solid #000;">
                 <td style="padding: 4px 0;">TOTAL</td>
@@ -560,7 +585,7 @@ document.addEventListener('alpine:init', () => {
             this.paymentMethod = method;
             if (method === 'qris') {
                 this.paidAmount = this.totalAmount;
-                this.displayPaidAmount = this.formatRupiah(this.totalAmount);
+                this.displayPaidAmount = this.formatCurrency(this.totalAmount);
             } else {
                 this.paidAmount = null;
                 this.displayPaidAmount = '';
@@ -594,8 +619,20 @@ document.addEventListener('alpine:init', () => {
             return this.filteredProducts.slice(start, start + this.perPage);
         },
 
-        get totalAmount() {
+        get subtotalAmount() {
             return this.cart.reduce((t, i) => t + i.price * i.quantity, 0);
+        },
+
+        get taxPercent() {
+            return parseFloat('{{ setting("default_tax", 0) }}');
+        },
+
+        get taxAmount() {
+            return this.subtotalAmount * (this.taxPercent / 100);
+        },
+
+        get totalAmount() {
+            return this.subtotalAmount + this.taxAmount;
         },
 
         get changeAmount() {
@@ -640,7 +677,12 @@ document.addEventListener('alpine:init', () => {
         updatePaidAmount(e) {
             let val = e.target.value.replace(/\D/g, '');
             this.paidAmount = val ? parseInt(val, 10) : null;
-            this.displayPaidAmount = val ? new Intl.NumberFormat('id-ID').format(this.paidAmount) : '';
+            const currency = '{{ setting("store_currency", "IDR") }}';
+            let locale = 'id-ID';
+            if (currency === 'USD') locale = 'en-US';
+            else if (currency === 'SGD') locale = 'en-SG';
+            else if (currency === 'EUR') locale = 'de-DE';
+            this.displayPaidAmount = val ? new Intl.NumberFormat(locale).format(this.paidAmount) : '';
         },
 
         printReceipt() {
@@ -648,16 +690,31 @@ document.addEventListener('alpine:init', () => {
             const storeName = document.getElementById('pr-store');
             const address   = document.getElementById('pr-address');
             const phone     = document.getElementById('pr-phone');
-            if (storeName) storeName.textContent = '{{ $settings["store_name"] ?? config("app.name") }}';
-            if (address)   address.textContent   = '{{ $settings["address"] ?? "" }}';
-            if (phone)     phone.textContent      = '{{ !empty($settings["phone"]) ? "Telp: ".$settings["phone"] : "" }}';
+            if (storeName) storeName.textContent = '{{ $branch->name ?? config("app.name") }}';
+            if (address)   address.textContent   = '{{ $branch->address ?? "" }}';
+            if (phone)     phone.textContent      = '{{ !empty($branch->phone) ? "Telp: ".$branch->phone : "" }}';
+            
             document.getElementById('pr-invoice').textContent  = this.lastInvoice;
             document.getElementById('pr-date').textContent     = this.lastDateTime;
             document.getElementById('pr-method').textContent   = this.lastPaymentMethod === 'cash' ? 'cash' : 'qris';
-            document.getElementById('pr-subtotal').textContent = this.formatRupiah(this.lastTotal);
-            document.getElementById('pr-total').textContent    = this.formatRupiah(this.lastTotal);
-            document.getElementById('pr-paid').textContent     = this.formatRupiah(this.lastPaid);
-            document.getElementById('pr-change').textContent   = this.formatRupiah(this.lastChange);
+            
+            const subtotal = this.lastItems.reduce((s, i) => s + i.price * i.quantity, 0);
+            const taxAmount = subtotal * (this.taxPercent / 100);
+            
+            document.getElementById('pr-subtotal').textContent = this.formatCurrency(subtotal);
+            
+            const taxRow = document.getElementById('pr-tax-row');
+            if (this.taxPercent > 0) {
+                taxRow.style.display = 'table-row';
+                document.getElementById('pr-tax-percent').textContent = this.taxPercent;
+                document.getElementById('pr-tax-amount').textContent = this.formatCurrency(taxAmount);
+            } else {
+                taxRow.style.display = 'none';
+            }
+            
+            document.getElementById('pr-total').textContent    = this.formatCurrency(this.lastTotal);
+            document.getElementById('pr-paid').textContent     = this.formatCurrency(this.lastPaid);
+            document.getElementById('pr-change').textContent   = this.formatCurrency(this.lastChange);
             
             // Adjust print layout labels based on payment method
             const payLabel = document.getElementById('pr-pay-label');
@@ -676,8 +733,8 @@ document.addEventListener('alpine:init', () => {
                 return `<tr><td colspan="3" style="font-weight:bold; padding-top:4px;">${i.name}</td></tr>`
                      + `<tr>`
                      + `<td style="width: 15%; padding-bottom:4px;">${i.quantity}x</td>`
-                     + `<td style="width: 45%; padding-bottom:4px;">${this.formatRupiah(i.price)}</td>`
-                     + `<td style="width: 40%; text-align: right; padding-bottom:4px;">${this.formatRupiah(sub)}</td>`
+                     + `<td style="width: 45%; padding-bottom:4px;">${this.formatCurrency(i.price)}</td>`
+                     + `<td style="width: 40%; text-align: right; padding-bottom:4px;">${this.formatCurrency(sub)}</td>`
                      + `</tr>`;
             }).join('');
             
@@ -727,8 +784,14 @@ document.addEventListener('alpine:init', () => {
 
         closeModal() { this.showSuccessModal = false; },
 
-        formatRupiah(n) {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
+        formatCurrency(n) {
+            const currency = '{{ setting("store_currency", "IDR") }}';
+            let locale = 'id-ID';
+            let decimals = 0;
+            if (currency === 'USD') { locale = 'en-US'; decimals = 2; }
+            else if (currency === 'SGD') { locale = 'en-SG'; decimals = 2; }
+            else if (currency === 'EUR') { locale = 'de-DE'; decimals = 2; }
+            return new Intl.NumberFormat(locale, { style: 'currency', currency: currency, maximumFractionDigits: decimals }).format(n);
         }
     }));
 });

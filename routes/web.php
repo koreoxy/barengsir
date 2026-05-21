@@ -6,6 +6,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\VendorUserController;
 use Illuminate\Support\Facades\Route;
 
 // Root - redirect to login if not auth
@@ -52,6 +54,7 @@ Route::middleware(['auth', 'verified', 'role:admin', 'branch'])->group(function 
     Route::get('/setting', [App\Http\Controllers\SettingController::class, 'index'])->name('setting.index');
     Route::put('/setting/store', [App\Http\Controllers\SettingController::class, 'updateStore'])->name('setting.store');
     Route::put('/setting/account', [App\Http\Controllers\SettingController::class, 'updateAccount'])->name('setting.account');
+    Route::put('/setting/system', [App\Http\Controllers\SettingController::class, 'updateSystemSettings'])->name('setting.system');
 
     // Vendor Management (Owner only)
     Route::middleware(['role:admin', 'branch'])->group(function () {
