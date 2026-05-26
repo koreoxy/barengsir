@@ -3,17 +3,90 @@
 {{-- Override: halaman ini pakai fixed layout sendiri, content-main harus tidak overflow --}}
 <style>
     .content-main { overflow: visible !important; }
-    body { overflow: hidden !important; }
+    /* Desktop: lock scroll. Mobile: let the catalog column scroll naturally */
+    @media (min-width: 768px) { body { overflow: hidden !important; } }
+
+    /* Hide scrollbar on mobile category bar (Chrome/Safari/WebKit) */
+    .mob-cat-scroll::-webkit-scrollbar { display: none; }
 </style>
 
 <div x-data="posApp({{ Js::from($products) }}, {{ Js::from($categories) }})"
-     class="flex h-screen overflow-hidden bg-slate-100">
+     class="flex flex-col md:flex-row h-screen md:h-screen overflow-y-auto md:overflow-hidden bg-slate-100">
 
     {{-- LEFT: Product Catalog --}}
-    <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
+    <div class="flex flex-col flex-1 min-w-0 overflow-hidden md:overflow-hidden overflow-y-auto md:overflow-y-hidden">
 
-        {{-- Top Bar --}}
-        <div class="shrink-0 px-5 pt-4 pb-3 bg-slate-100">
+        {{-- ── MOBILE TOP BAR (hidden on desktop) ─────────────────── --}}
+        <div class="sticky top-0 z-10 bg-white border-b border-slate-100 md:hidden shrink-0">
+            <div class="flex items-center justify-between px-4 py-3">
+                {{-- Back button --}}
+                <a href="{{ route('dashboard') }}"
+                   class="p-2 -ml-1 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors active:scale-95">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </a>
+
+                {{-- Table / Customer info --}}
+                <div class="text-center">
+                    <h2 class="text-sm font-extrabold text-slate-800 leading-tight" x-text="tableName"></h2>
+                    <p class="text-[10px] text-slate-400" x-show="customerName" x-text="customerName"></p>
+                    <p class="text-[10px] text-slate-400" x-show="!customerName">Point of Sale</p>
+                </div>
+
+                {{-- Search toggle --}}
+                <button @click="mobileSearchOpen = !mobileSearchOpen"
+                        class="p-2 -mr-1 rounded-xl transition-colors active:scale-95"
+                        :class="mobileSearchOpen ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Slide-down search input --}}
+            <div x-show="mobileSearchOpen"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 -translate-y-1"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 -translate-y-1"
+                 class="px-4 pb-3 relative">
+                <svg class="absolute left-7 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                </svg>
+                <input type="text" x-model="searchQuery" @input="currentPage=1"
+                       x-ref="mobileSearchInput"
+                       class="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent placeholder-slate-400"
+                       placeholder="Cari nama produk / SKU...">
+            </div>
+
+            {{-- Mobile Category Horizontal Scroll --}}
+            {{-- Inline style guarantees cross-browser scroll: iOS touch momentum + Firefox/Chrome/Edge hide scrollbar --}}
+            <div class="mob-cat-scroll flex items-center gap-2 px-4 pb-3 pt-0"
+                 style="overflow-x: scroll; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; flex-wrap: nowrap;">
+                <button @click="selectedCategory=null; currentPage=1"
+                        :class="selectedCategory===null
+                            ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
+                            : 'bg-slate-100 text-slate-600 hover:bg-blue-50 hover:text-blue-600'"
+                        class="inline-flex items-center shrink-0 whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150">
+                    Semua
+                </button>
+                <template x-for="cat in categories" :key="cat.id">
+                    <button @click="selectedCategory=cat.id; currentPage=1"
+                            :class="selectedCategory===cat.id
+                                ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
+                                : 'bg-slate-100 text-slate-600 hover:bg-blue-50 hover:text-blue-600'"
+                            class="inline-flex items-center shrink-0 whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-150"
+                            x-text="cat.name">
+                    </button>
+                </template>
+            </div>
+        </div>
+
+        {{-- ── DESKTOP Top Bar (hidden on mobile) ──────────────────── --}}
+        <div class="shrink-0 px-5 pt-4 pb-3 bg-slate-100 hidden md:block">
             <div class="flex items-center justify-between gap-4 mb-3">
                 <div>
                     <h2 class="text-lg font-bold text-slate-800">Point of Sale</h2>
@@ -51,8 +124,8 @@
         </div>
 
         {{-- Product Grid --}}
-        <div class="flex-1 overflow-y-auto px-5 pb-2">
-            <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+        <div class="flex-1 overflow-y-auto px-4 md:px-5 pb-2">
+            <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 md:gap-4 pb-32 md:pb-2">
                 <template x-for="product in paginatedProducts" :key="product.id">
                     <div @click="handleAddToCart(product)"
                          :class="product.stock <= 0 ? 'cursor-not-allowed' : 'hover:border-blue-400 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer'"
@@ -68,11 +141,12 @@
                         </div>
 
                         {{-- Image area --}}
-                        <div class="h-36 flex items-center justify-center overflow-hidden relative border-b border-slate-100">
+                        <div class="aspect-square md:h-36 md:aspect-auto flex items-center justify-center overflow-hidden relative border-b border-slate-100">
 
                             {{-- With image --}}
                             <template x-if="product.image">
                                 <img :src="'/storage/' + product.image"
+                                     loading="lazy"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                      :class="product.stock <= 0 ? 'opacity-60' : ''">
                             </template>
@@ -130,8 +204,9 @@
                         {{-- Info --}}
                         <div class="p-3 flex-1 flex flex-col">
                             <p class="text-[10px] text-slate-400 mb-0.5" x-text="product.category ? product.category.name : '-'"></p>
-                            <h4 class="text-sm font-semibold text-slate-800 leading-tight line-clamp-2 flex-1" x-text="product.name"></h4>
-                            <p class="text-sm font-bold mt-2" :class="product.stock <= 0 ? 'text-slate-400' : 'text-blue-600'"
+                            <h4 class="text-sm font-semibold text-slate-800 leading-tight line-clamp-2" x-text="product.name"></h4>
+                            <p class="text-[11px] text-slate-400 leading-snug line-clamp-2 mt-1" x-show="product.description" x-text="product.description"></p>
+                            <p class="text-sm font-bold mt-auto pt-2" :class="product.stock <= 0 ? 'text-slate-400' : 'text-blue-600'"
                                x-text="formatCurrency(product.selling_price)"></p>
                         </div>
                     </div>
@@ -184,8 +259,8 @@
 
     </div>
 
-    {{-- RIGHT: Cart --}}
-    <div class="shrink-0 w-80 xl:w-96 bg-white border-l border-slate-200 flex flex-col shadow-xl">
+    {{-- RIGHT: Cart (Desktop only – hidden on mobile) --}}
+    <div class="hidden md:flex shrink-0 w-80 xl:w-96 bg-white border-l border-slate-200 flex-col shadow-xl">
 
         {{-- Header --}}
         <div class="shrink-0 px-5 py-4 border-b border-slate-100">
@@ -325,6 +400,254 @@
             </button>
         </div>
     </div>
+
+{{-- ═══════════════════════════════════════════════════════════
+     MOBILE COMPONENTS (md:hidden) — FAB + Cart Drawer + Bottom Nav
+     ═══════════════════════════════════════════════════════════ --}}
+
+{{-- ── Floating Action Button (FAB) Keranjang ────────────────── --}}
+<button @click="toggleCartDrawer(true)"
+        class="fixed bottom-20 right-4 z-30 md:hidden w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-300 transition-transform active:scale-95 focus:outline-none">
+    <div class="relative">
+        {{-- Cart Icon --}}
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        {{-- Badge count --}}
+        <span x-show="cart.reduce((s,i)=>s+i.quantity,0) > 0"
+              x-text="cart.reduce((s,i)=>s+i.quantity,0)"
+              x-transition:enter="transition ease-out duration-150"
+              x-transition:enter-start="opacity-0 scale-50"
+              x-transition:enter-end="opacity-100 scale-100"
+              class="absolute -top-3.5 -right-3.5 bg-red-500 text-white text-[10px] font-extrabold min-w-[18px] px-1 py-0.5 rounded-full border-2 border-white text-center leading-none">
+        </span>
+    </div>
+</button>
+
+{{-- ── Slide-Up Cart Bottom Sheet Drawer ──────────────────────── --}}
+<div x-show="cartDrawerOpen" class="fixed inset-0 z-50 md:hidden" style="display:none;">
+
+    {{-- Backdrop --}}
+    <div x-show="cartDrawerOpen"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @click="toggleCartDrawer(false)"
+         class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
+
+    {{-- Bottom Sheet Card --}}
+    <div x-show="cartDrawerOpen"
+         x-transition:enter="transition ease-out duration-300 transform-gpu"
+         x-transition:enter-start="translate-y-full"
+         x-transition:enter-end="translate-y-0"
+         x-transition:leave="transition ease-in duration-200 transform-gpu"
+         x-transition:leave-start="translate-y-0"
+         x-transition:leave-end="translate-y-full"
+         class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[88vh] flex flex-col shadow-2xl pb-safe">
+
+        {{-- Handle + Header --}}
+        <div class="shrink-0 flex flex-col items-center pt-3 pb-2 border-b border-slate-100 px-5">
+            <div class="w-12 h-1 bg-slate-200 rounded-full mb-3 cursor-pointer" @click="toggleCartDrawer(false)"></div>
+            <div class="w-full flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-extrabold text-slate-800">Detail Pesanan</h3>
+                    <p class="text-xs text-slate-400 mt-0.5"><span x-text="cart.reduce((s,i)=>s+i.quantity,0)"></span> item terpilih</p>
+                </div>
+                <button @click="toggleCartDrawer(false)"
+                        class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        {{-- Cart Items (scrollable) --}}
+        <div class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+
+            {{-- Empty state --}}
+            <template x-if="cart.length === 0">
+                <div class="h-40 flex flex-col items-center justify-center text-slate-300">
+                    <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                    <p class="text-sm font-medium">Keranjang masih kosong</p>
+                </div>
+            </template>
+
+            {{-- Cart item list (reuses same Alpine cart state as desktop) --}}
+            <template x-for="(item, index) in cart" :key="item.product_id">
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                    <div class="flex items-start justify-between gap-2 mb-3">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-slate-800 line-clamp-1" x-text="item.name"></p>
+                            <p class="text-xs text-blue-600 font-medium mt-0.5" x-text="formatCurrency(item.price)"></p>
+                        </div>
+                        <button @click="removeFromCart(index)"
+                                class="shrink-0 w-7 h-7 rounded-lg bg-slate-200 hover:bg-red-100 hover:text-red-500 flex items-center justify-center text-slate-400 transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        {{-- Qty controls (large touch targets) --}}
+                        <div class="flex items-center bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                            <button @click="decreaseQty(index)" :disabled="item.quantity<=1"
+                                    class="w-10 h-10 flex items-center justify-center text-slate-600 hover:bg-slate-100 disabled:opacity-30 transition-colors font-bold text-lg">−</button>
+                            <span class="w-10 h-10 flex items-center justify-center text-sm font-bold text-slate-800 border-x border-slate-200" x-text="item.quantity"></span>
+                            <button @click="increaseQty(index)"
+                                    class="w-10 h-10 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors font-bold text-lg">+</button>
+                        </div>
+                        <p class="text-sm font-bold text-slate-800" x-text="formatCurrency(item.price * item.quantity)"></p>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        {{-- Checkout Footer --}}
+        <div class="shrink-0 border-t border-slate-100 px-5 py-4 space-y-3 bg-white">
+            {{-- Subtotal & tax --}}
+            <div class="flex justify-between text-sm text-slate-500">
+                <span>Subtotal</span>
+                <span class="font-medium text-slate-700" x-text="formatCurrency(subtotalAmount)"></span>
+            </div>
+            <template x-if="taxPercent > 0">
+                <div class="flex justify-between text-sm text-slate-500">
+                    <span>Pajak (PPN <span x-text="taxPercent"></span>%)</span>
+                    <span class="font-medium text-slate-700" x-text="formatCurrency(taxAmount)"></span>
+                </div>
+            </template>
+            <div class="flex justify-between items-center py-1.5 border-t border-dashed border-slate-200">
+                <span class="text-base font-bold text-slate-800">Total</span>
+                <span class="text-xl font-extrabold text-blue-600" x-text="formatCurrency(totalAmount)"></span>
+            </div>
+
+            {{-- Payment Method Toggle --}}
+            <div>
+                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block">Metode Pembayaran</label>
+                <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200/50">
+                    <button type="button" @click="setPaymentMethod('cash')"
+                            :class="paymentMethod === 'cash' ? 'bg-white text-blue-600 shadow-sm font-extrabold' : 'text-slate-500 hover:text-slate-700 font-semibold'"
+                            class="py-2.5 text-xs rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        Cash / Tunai
+                    </button>
+                    <button type="button" @click="setPaymentMethod('qris')"
+                            :class="paymentMethod === 'qris' ? 'bg-white text-blue-600 shadow-sm font-extrabold' : 'text-slate-500 hover:text-slate-700 font-semibold'"
+                            class="py-2.5 text-xs rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                        </svg>
+                        QRIS
+                    </button>
+                </div>
+            </div>
+
+            {{-- Cash: uang diterima --}}
+            <div x-show="paymentMethod === 'cash'"
+                 x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0 -translate-y-1"
+                 x-transition:enter-end="opacity-100 translate-y-0">
+                <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5 block">Uang Diterima</label>
+                <input type="text" :value="displayPaidAmount" @input="updatePaidAmount"
+                       class="w-full px-4 py-3 text-right text-lg font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-300 shadow-inner"
+                       placeholder="Masukkan nominal..." autocomplete="off">
+            </div>
+
+            {{-- QRIS info --}}
+            <div x-show="paymentMethod === 'qris'"
+                 x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0 -translate-y-1"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-md shadow-blue-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-blue-700">Metode Pembayaran QRIS</p>
+                    <p class="text-[10px] text-blue-500 mt-0.5">Uang pembayaran otomatis pas sesuai total belanja.</p>
+                </div>
+            </div>
+
+            {{-- Kembalian --}}
+            <div x-show="paymentMethod === 'cash'" class="flex justify-between items-center text-sm px-1">
+                <span class="text-slate-500">Kembalian</span>
+                <span class="font-bold text-base" :class="changeAmount < 0 ? 'text-red-500' : 'text-emerald-600'" x-text="formatCurrency(changeAmount)"></span>
+            </div>
+
+            {{-- Process Button --}}
+            <button type="button" @click.prevent="processCheckout(); if($event.target && cart.length===0) toggleCartDrawer(false);"
+                    :disabled="cart.length===0 || (paymentMethod==='cash' && (paidAmount===null || paidAmount<totalAmount)) || isProcessing"
+                    class="w-full py-4 px-4 rounded-xl font-bold text-base text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-150 shadow-lg shadow-blue-200">
+                <template x-if="isProcessing">
+                    <svg class="animate-spin w-5 h-5 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </template>
+                <template x-if="!isProcessing"><span>PROSES PEMBAYARAN</span></template>
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- ── Bottom Sticky Navigation Bar ────────────────────────────── --}}
+<div class="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-slate-100 md:hidden pb-safe">
+    <div class="flex items-center justify-around py-2.5 px-2">
+
+        {{-- 1. POS Menu (Active) --}}
+        <a href="#" class="flex flex-col items-center gap-0.5 text-blue-600 relative px-3 py-1">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/>
+            </svg>
+            <span class="text-[9px] font-bold">POS</span>
+            {{-- Active dot --}}
+            <span class="absolute -bottom-0.5 w-1 h-1 bg-blue-600 rounded-full"></span>
+        </a>
+
+        {{-- 2. Order List --}}
+        <a href="{{ route('dashboard') }}" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600 px-3 py-1 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <span class="text-[9px] font-semibold">Order</span>
+        </a>
+
+        {{-- 3. Customers --}}
+        <a href="{{ route('dashboard') }}" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600 px-3 py-1 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span class="text-[9px] font-semibold">Pelanggan</span>
+        </a>
+
+        {{-- 4. Quick Action --}}
+        <a href="{{ route('dashboard') }}" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600 px-3 py-1 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+            <span class="text-[9px] font-semibold">Aksi</span>
+        </a>
+
+        {{-- 5. Settings --}}
+        <a href="{{ route('setting.index') }}" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-600 px-3 py-1 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span class="text-[9px] font-semibold">Settings</span>
+        </a>
+
+    </div>
+</div>
 
 {{-- ═══════════════════════════════════════
      SUCCESS MODAL — Struk Belanja (teleported to body)
@@ -580,6 +903,21 @@ document.addEventListener('alpine:init', () => {
         currentPage: 1,
         perPage: 10,
         paymentMethod: 'cash',
+
+        // ── Mobile UI State ──────────────────────────────────────
+        mobileSearchOpen: false,
+        cartDrawerOpen: false,
+        tableName: 'POS Kasir',
+        customerName: '',
+
+        toggleCartDrawer(status) {
+            this.cartDrawerOpen = status;
+            if (status) {
+                document.body.classList.add('overflow-hidden');
+            } else {
+                document.body.classList.remove('overflow-hidden');
+            }
+        },
 
         setPaymentMethod(method) {
             this.paymentMethod = method;

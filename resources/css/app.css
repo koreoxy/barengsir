@@ -50,3 +50,22 @@ nav[role="navigation"] span[aria-disabled="true"] > span {
     color: #cbd5e1 !important; /* text-slate-300 */
     cursor: not-allowed;
 }
+
+/* ── Mobile Safe Area Utilities ─────────────────────── */
+/* Ensures bottom navigation & drawers clear the home indicator / gesture bar
+   on iPhones (notch/Dynamic Island) and Android navigation gesture bars. */
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+.pt-safe {
+    padding-top: env(safe-area-inset-top);
+}
+/* Scrollbar hide utility for horizontal scroll category bars */
+.scrollbar-none {
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* IE/Edge */
+}
+.scrollbar-none::-webkit-scrollbar {
+    display: none;                /* Chrome/Safari */
+}
+

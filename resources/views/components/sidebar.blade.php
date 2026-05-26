@@ -2,11 +2,11 @@
 
     {{-- ── Mobile Overlay ──────────────────────────────────────── --}}
     <div id="sidebarOverlay"
-         class="fixed inset-0 bg-black/60 backdrop-blur-sm z-20 hidden md:hidden">
+         class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden">
     </div>
 
     <aside id="sidebarComponent"
-           class="fixed inset-y-0 left-0 z-30 -translate-x-full
+           class="fixed inset-y-0 left-0 z-50 -translate-x-full
                   md:relative md:translate-x-0 md:inset-y-auto md:z-auto
                   w-60 h-screen flex flex-col shrink-0
                   bg-white border-r border-slate-200
