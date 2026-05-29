@@ -90,6 +90,24 @@ Route::middleware(['auth', 'role:super_admin'])
         
         Route::resource('vendors', App\Http\Controllers\SuperAdmin\VendorController::class);
 
+        Route::resource('vendors.users', App\Http\Controllers\SuperAdmin\VendorUserController::class)
+            ->only(['create', 'store', 'destroy'])
+            ->names([
+                'create' => 'vendors.users.create',
+                'store' => 'vendors.users.store',
+                'destroy' => 'vendors.users.destroy',
+            ]);
+
+        Route::resource('vendors.branches', App\Http\Controllers\SuperAdmin\VendorBranchController::class)
+            ->except(['index', 'show'])
+            ->names([
+                'create' => 'vendors.branches.create',
+                'store' => 'vendors.branches.store',
+                'edit' => 'vendors.branches.edit',
+                'update' => 'vendors.branches.update',
+                'destroy' => 'vendors.branches.destroy',
+            ]);
+
         // New Feature Routes
         Route::get('/reports', [App\Http\Controllers\SuperAdminDashboardController::class, 'reports'])
             ->name('reports');
